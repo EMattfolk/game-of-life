@@ -1,0 +1,89 @@
+/comments are lines starting with '/'
+/shapes are structured like this: (button) (width) (height) and then the shape below
+/use 'O' (capital 'o') for black tile and '-' for white tile
+
+0 5 5
+OOO-O
+O----
+---OO
+-OO-O
+O-O-O
+
+1 13 13
+--OO-----OO--
+---OO---OO---
+O--O-O-O-O--O
+OOO-OO-OO-OOO
+-O-O-O-O-O-O-
+--OOO---OOO--
+-------------
+--OOO---OOO--
+-O-O-O-O-O-O-
+OOO-OO-OO-OOO
+O--O-O-O-O--O
+---OO---OO---
+--OO-----OO--
+
+a 4 4
+--O-
+-O-O
+O--O
+-OO-
+
+2 3 3
+--O
+O-O
+-OO
+
+3 3 10
+-O-
+-O-
+O-O
+-O-
+-O-
+-O-
+-O-
+O-O
+-O-
+-O-
+
+4 36 9
+------------------------O-----------
+----------------------O-O-----------
+------------OO------OO------------OO
+-----------O---O----OO------------OO
+OO--------O-----O---OO--------------
+OO--------O---O-OO----O-O-----------
+----------O-----O-------O-----------
+-----------O---O--------------------
+------------OO----------------------
+
+5 6 6
+--OO--
+-OO---
+O-O--O
+OO-OOO
+O-O-O-
+-OOO--
+
+6 5 4
+O--O-
+----O
+O---O
+-OOOO
+
+7 3 3
+-OO
+OO-
+-O-
+
+8 8 3
+------O-
+OO------
+-O---OOO
+
+9 7 3
+-O-----
+---O---
+OO--OOO
+
