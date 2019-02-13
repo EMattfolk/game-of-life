@@ -1,5 +1,4 @@
 import java.awt.Color;
-import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.util.ArrayList;
@@ -54,10 +53,10 @@ public class Renderer
         }
     }
 
-    public void draw_shape_outline (int mouse_x, int mouse_y, ArrayList<Point> shape, Point offset)
+    public void draw_shape_outline (int mouse_x, int mouse_y, ArrayList<Vec2> shape, Vec2 offset)
     {
         int x, y;
-        for (Point p : shape)
+        for (Vec2 p : shape)
         {
             x = p.x + mouse_x - offset.x;
             y = p.y + mouse_y - offset.y;

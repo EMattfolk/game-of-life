@@ -1,45 +1,77 @@
-import java.awt.Point;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
- * Created by Pwnxl on 2017-05-06.
+ * Created by Erik Mattfolk on 2017-05-06.
+ * Refactored on 2019-02-13
  *
- * Stores, returns, saves and rotates shapes to be put on the field
+ * Loades, saves, returns and cycles Shapes to be put on the field
  */
 public class ShapeHandler {
 
-    private HashMap<Character,ArrayList<Point>> shapes;
-    private HashMap<Character,Point> shape_offsets;
+    public static final String SAVE_PATH = "shapes.json";
+    private static final Type shapesType = new TypeToken<ArrayList<Shape>>() {}.getType();
+    private int currentShape;
+    private ArrayList<Shape> shapes;
+    private Gson gson;
 
     public ShapeHandler ()
     {
-        shapes = new HashMap<Character,ArrayList<Point>>();
-        shape_offsets = new HashMap<Character,Point>();
-        read_file();
+        currentShape = 0;
+        shapes = new ArrayList();
+        gson = new Gson();
+        String data = read_file();
+        extract_data(data);
     }
 
-    public ArrayList<Point> get_shape (char shape)
+    public Shape getCurrentShape()
     {
-        return shapes.get(shape);
+        if (shapes.size() == 0)
+            return Shape.EMPTY;
+        else
+            return shapes.get(currentShape);
     }
 
-    public Point get_offset (char shape)
+    public void deleteCurrentShape()
     {
-        return shape_offsets.get(shape);
+        if (shapes.size() == 0) return;
+        shapes.remove(currentShape);
+        if (shapes.size() == 0) return;
+        currentShape %= shapes.size();
     }
 
-    public boolean has_shape (char shape)
+    public Vec2 get_offset()
     {
-        return shapes.containsKey(shape);
+        return getCurrentShape().getMiddle();
     }
 
-    private void read_file ()
+    public void cycleForward()
     {
-        File file = new File("shapes.txt");
+        if (shapes.size() == 0) return;
+        currentShape = (currentShape + 1) % shapes.size();
+    }
+
+    public void cycleBackward()
+    {
+        if (shapes.size() == 0) return;
+        currentShape = Math.floorMod(currentShape - 1, shapes.size());
+    }
+
+    public void cycleToEnd()
+    {
+        if (shapes.size() == 0) return;
+        currentShape = shapes.size() - 1;
+    }
+
+    private String read_file()
+    {
+        File file = new File(SAVE_PATH);
         String text = "";
 
         if (!file.isFile())
@@ -62,100 +94,44 @@ public class ShapeHandler {
         {
             System.out.println("Failed to find file");
         }
-        extract_data(text);
+
+        return text;
     }
 
-    private void extract_data (String data)
+    private void extract_data(String data)
     {
-        data = data.replaceAll(System.lineSeparator(),"\n");
-        ArrayList<Point> shape = new ArrayList<Point>();
-        char current_char ,button = 0;
-        int height = 0, width = 0, index = 0;
-        while (data.length() > index)
-        {
-            current_char = data.charAt(index);
-            if (current_char == '-')
-            {
-                index++;
-            }
-            else if (current_char == 'O')
-            {
-                shape.add(new Point(index,height));
-                index++;
-            }
-            else if (current_char == '\n')
-            {
-                data = data.substring(index+1);
-                index = 0;
-                height++;
-            }
-            else if (Game.valid_buttons.contains(current_char))
-            {
-                if (!shape.isEmpty())
-                {
-                    shapes.put(button,shape);
-                    shape = new ArrayList<Point>();
-                }
-                button = current_char;
-                data = data.substring(data.indexOf(' ')+1);
-                width = Integer.parseInt(data.substring(0,data.indexOf(' ')))-1;
-                data = data.substring(data.indexOf(' ')+1);
-                height = 1-Integer.parseInt(data.substring(0,data.indexOf('\n')));
-                data = data.substring(data.indexOf('\n')+1);
-                shape_offsets.put(current_char, new Point(width/2,height/2));
-                index = 0;
-            }
-            else if (current_char == '/')
-            {
-                if (data.contains("\n"))
-                {
-                    data = data.substring(data.indexOf('\n')+1);
-                }
-                else data = "";
-            }
-        }
-        if (!shape.isEmpty())
-        {
-            shapes.put(button,shape);
-            return;
-        }
+        if (data.equals("")) return;
+        shapes = gson.fromJson(data, shapesType);
     }
 
-    public void add_shape (char key, ArrayList<Point> shape)
+    public void add_shape(ArrayList<Vec2> points)
     {
-        if (!shape.isEmpty())
+        if (!points.isEmpty())
         {
-            int max_x = 0, max_y = 0;
-            for (Point p : shape)
-            {
-                max_x = p.x > max_x ? p.x : max_x;
-                max_y = p.y < max_y ? p.y : max_y;
-            }
-            shape_offsets.put(key, new Point(max_x/2,max_y/2));
-            shapes.put(key, shape);
+            shapes.add(new Shape(points));
             save();
         }
     }
 
-    public ArrayList<Point> rotate_shape (ArrayList<Point> shape)
+    public ArrayList<Vec2> rotate_shape(ArrayList<Vec2> shape)
     {
-        ArrayList<Point> rotation = new ArrayList<Point>();
+        ArrayList<Vec2> rotation = new ArrayList<>();
         int max_x = Integer.MIN_VALUE, max_y = Integer.MIN_VALUE;
-        for (Point p : shape)
+        for (Vec2 p : shape)
         {
             max_x = p.x > max_x ? p.x : max_x;
             max_y = p.y > max_y ? p.y : max_y;
         }
-        for (Point p : shape)
+        for (Vec2 p : shape)
         {
-            rotation.add(new Point(max_y - p.y,p.x - max_x));
+            rotation.add(new Vec2(max_y - p.y,p.x - max_x));
         }
         return rotation;
     }
 
-    public void save ()
+    public void save()
     {
-        File file = new File("shapes.txt");
+        File file = new File(SAVE_PATH);
         if (!file.isFile())
         {
             try
@@ -167,51 +143,12 @@ public class ShapeHandler {
                 System.out.println("Failed to create file");
             }
         }
-        String text = "", br = System.lineSeparator();
-        text += "/comments are lines starting with '/'" + br;
-        text += "/shapes are structured like this: (button) (width) (height) and then the shape below" + br;
-        text += "/use 'O' (capital 'o') for black tile and '-' for white tile" + br + br;
-        ArrayList<Point> shape;
-        char [] grid;
-        int max_x, max_y, br_length = br.length();
-        for (char key : shapes.keySet())
-        {
-            shape = shapes.get(key);
-            max_x = 0;
-            max_y = 0;
-            for (Point p : shape)
-            {
-                max_x = p.x > max_x ? p.x : max_x;
-                max_y = p.y < max_y ? p.y : max_y;
-            }
-            max_y = -max_y;
-            text += key + " " + (max_x + 1) + " " + (max_y + 1) + br;
 
-            grid = new char[(max_x + 1) * (max_y + 1)];
-            for (int i = 0; i <= max_y; i++)
-            {
-                for (int j = 0; j <= max_x; j++)
-                {
-                    grid[i*(max_x + 1) + j] = '-';
-                }
-            }
-            for (Point p : shape)
-            {
-                grid[(max_y + p.y)*(max_x + 1) + p.x] = 'O';
-            }
-            for (int i = 0; i <= max_y; i++)
-            {
-                for (int j = 0; j <= max_x; j++)
-                {
-                    text += grid[i*(max_x + 1) + j];
-                }
-                text += br;
-            }
-            text += br;
-        }
+        String text = gson.toJson(shapes, shapesType);
+
         try
         {
-            Files.write(file.toPath(),text.getBytes());
+            Files.write(file.toPath(), text.getBytes());
         }
         catch (IOException e)
         {

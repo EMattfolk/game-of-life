@@ -1,4 +1,3 @@
-import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -82,17 +81,17 @@ public class Field {
         field[index] = !field[index];
     }
 
-    public void put_shape (int x, int y, ArrayList<Point> shape, Point offset)
+    public void put_shape (int x, int y, ArrayList<Vec2> shape, Vec2 offset)
     {
-        for (Point p : shape)
+        for (Vec2 p : shape)
         {
             set_tile(x+p.x-offset.x,y+p.y-offset.y,true);
         }
     }
 
-    public ArrayList<Point> get_shape (int x1, int y1, int x2, int y2)
+    public ArrayList<Vec2> get_shape (int x1, int y1, int x2, int y2)
     {
-        ArrayList<Point> shape = new ArrayList<Point>();
+        ArrayList<Vec2> shape = new ArrayList<Vec2>();
         x1 = put_within_bounds(x1,width);
         x2 = put_within_bounds(x2,width);
         y1 = put_within_bounds(y1,height);
@@ -106,7 +105,7 @@ public class Field {
             {
                 if (field[i*width + j])
                 {
-                    shape.add(new Point(j,i));
+                    shape.add(new Vec2(j,i));
                     shape_max_y = i > shape_max_y ? i : shape_max_y;
                     shape_min_x = j < shape_min_x ? j : shape_min_x;
                 }
