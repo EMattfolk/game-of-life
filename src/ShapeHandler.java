@@ -10,19 +10,19 @@ import java.util.ArrayList;
 /**
  * Created by Erik Mattfolk on 2017-05-06.
  * Refactored on 2019-02-13
- *
+ * <p>
  * Loades, saves, returns and cycles Shapes to be put on the field
  */
 public class ShapeHandler {
 
     public static final String SAVE_PATH = "shapes.json";
-    private static final Type shapesType = new TypeToken<ArrayList<Shape>>() {}.getType();
+    private static final Type shapesType = new TypeToken<ArrayList<Shape>>() {
+    }.getType();
     private int currentShape;
     private ArrayList<Shape> shapes;
     private Gson gson;
 
-    public ShapeHandler ()
-    {
+    public ShapeHandler() {
         currentShape = 0;
         shapes = new ArrayList();
         gson = new Gson();
@@ -30,128 +30,100 @@ public class ShapeHandler {
         extract_data(data);
     }
 
-    public Shape getCurrentShape()
-    {
+    public Shape getCurrentShape() {
         if (shapes.size() == 0)
             return Shape.EMPTY;
         else
             return shapes.get(currentShape);
     }
 
-    public void deleteCurrentShape()
-    {
+    public void deleteCurrentShape() {
         if (shapes.size() == 0) return;
         shapes.remove(currentShape);
         if (shapes.size() == 0) return;
         currentShape %= shapes.size();
     }
 
-    public Vec2 get_offset()
-    {
+    public Vec2 get_offset() {
         return getCurrentShape().getMiddle();
     }
 
-    public void cycleForward()
-    {
+    public void cycleForward() {
         if (shapes.size() == 0) return;
         currentShape = (currentShape + 1) % shapes.size();
     }
 
-    public void cycleBackward()
-    {
+    public void cycleBackward() {
         if (shapes.size() == 0) return;
         currentShape = Math.floorMod(currentShape - 1, shapes.size());
     }
 
-    public void cycleToEnd()
-    {
+    public void cycleToEnd() {
         if (shapes.size() == 0) return;
         currentShape = shapes.size() - 1;
     }
 
-    private String read_file()
-    {
+    private String read_file() {
         File file = new File(SAVE_PATH);
         String text = "";
 
-        if (!file.isFile())
-        {
-            try
-            {
+        if (!file.isFile()) {
+            try {
                 file.createNewFile();
-            }
-            catch (IOException e)
-            {
+            } catch (IOException e) {
                 System.out.println("Failed to create file");
             }
         }
 
-        try
-        {
+        try {
             text = new String(Files.readAllBytes(file.toPath()));
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             System.out.println("Failed to find file");
         }
 
         return text;
     }
 
-    private void extract_data(String data)
-    {
+    private void extract_data(String data) {
         if (data.equals("")) return;
         shapes = gson.fromJson(data, shapesType);
     }
 
-    public void add_shape(ArrayList<Vec2> points)
-    {
-        if (!points.isEmpty())
-        {
+    public void add_shape(ArrayList<Vec2> points) {
+        if (!points.isEmpty()) {
             shapes.add(new Shape(points));
             save();
         }
     }
 
-    public ArrayList<Vec2> rotate_shape(ArrayList<Vec2> shape)
-    {
+    public ArrayList<Vec2> rotate_shape(ArrayList<Vec2> shape) {
         ArrayList<Vec2> rotation = new ArrayList<>();
         int max_x = Integer.MIN_VALUE, max_y = Integer.MIN_VALUE;
-        for (Vec2 p : shape)
-        {
+        for (Vec2 p : shape) {
             max_x = p.x > max_x ? p.x : max_x;
             max_y = p.y > max_y ? p.y : max_y;
         }
-        for (Vec2 p : shape)
-        {
-            rotation.add(new Vec2(max_y - p.y,p.x - max_x));
+        for (Vec2 p : shape) {
+            rotation.add(new Vec2(max_y - p.y, p.x - max_x));
         }
         return rotation;
     }
 
-    public void save()
-    {
+    public void save() {
         File file = new File(SAVE_PATH);
-        if (!file.isFile())
-        {
-            try
-            {
+        if (!file.isFile()) {
+            try {
                 file.createNewFile();
-            }
-            catch (IOException e)
-            {
+            } catch (IOException e) {
                 System.out.println("Failed to create file");
             }
         }
 
         String text = gson.toJson(shapes, shapesType);
 
-        try
-        {
+        try {
             Files.write(file.toPath(), text.getBytes());
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             System.out.println("Failed to save");
         }
     }
