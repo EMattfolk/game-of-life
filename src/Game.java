@@ -55,8 +55,8 @@ public class Game extends JComponent {
         UPS = 10;
         paused = true;
         tileMode = true;
-        currentShape = null;
-        current_offset = null;
+        currentShape = Shape.EMPTY;
+        current_offset = new Vec2();
         field = new Field(width, height);
         renderer = new Renderer(width, height, tile_size, field);
         shapeHandler = new ShapeHandler();
@@ -133,10 +133,13 @@ public class Game extends JComponent {
         setFocusable(true);
         setupMouseModes();
         setMouse(tileMouse);
-        addKeyListener(new KeyListener() {
+        addKeyListener(new KeyListener() { //TODO: Move to another file
 
             public void keyPressed(KeyEvent e) {
+
                 int key = e.getKeyCode();
+
+                // Global keys. Used to start/stop simulation and change between modes
                 if (key == KeyEvent.VK_SPACE) {
                     paused = !paused;
                 }
@@ -152,27 +155,47 @@ public class Game extends JComponent {
                         setMouse(shapeMouse);
                     }
                 }
-                else if (key == KeyEvent.VK_UP) {
-                    if (paused) {
-                        game_update();
+
+                // Keybindings in tile mode
+                if (tileMode) {
+                    if (key == KeyEvent.VK_UP) {
+                        if (paused) {
+                            game_update();
+                        }
+                    }
+                    else if (key == KeyEvent.VK_LEFT) {
+                        changeUPS(false);
+                    }
+                    else if (key == KeyEvent.VK_RIGHT) {
+                        changeUPS(true);
+                    }
+                    else if (key == KeyEvent.VK_D) {
+                        field.reset();
+                        paused = true;
                     }
                 }
-                else if (key == KeyEvent.VK_DOWN) {
-                    paused = !paused;
-                }
-                else if (key == KeyEvent.VK_LEFT) {
-                    changeUPS(false);
-                }
-                else if (key == KeyEvent.VK_RIGHT) {
-                    changeUPS(true);
-                }
-                else if (!tileMode && key == KeyEvent.VK_CONTROL) {
-                    currentShape = currentShape.getRotation();
-                    current_offset = currentShape.getMiddle();
-                    field.set_changed();
-                }
-                else if (!tileMode && key == KeyEvent.VK_UP) {
-
+                // Keybindings in shape mode
+                else {
+                    if (key == KeyEvent.VK_UP) {
+                        currentShape = currentShape.getRotation();
+                        current_offset = currentShape.getMiddle();
+                        field.set_changed();
+                    }
+                    else if (key == KeyEvent.VK_LEFT) {
+                        shapeHandler.cycleBackward();
+                        currentShape = shapeHandler.getCurrentShape();
+                        current_offset = shapeHandler.get_offset();
+                    }
+                    else if (key == KeyEvent.VK_RIGHT) {
+                        shapeHandler.cycleForward();
+                        currentShape = shapeHandler.getCurrentShape();
+                        current_offset = shapeHandler.get_offset();
+                    }
+                    else if (key == KeyEvent.VK_D) {
+                        shapeHandler.deleteCurrentShape();
+                        currentShape = shapeHandler.getCurrentShape();
+                        current_offset = shapeHandler.get_offset();
+                    }
                 }
             }
 
