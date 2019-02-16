@@ -27,4 +27,7 @@ public class Vec2 {
         x /= n;
         y /= n;
     }
+     public Vec2 offsetBy(Vec2 offset) {
+        return new Vec2(x + offset.x, y + offset.y);
+     }
 }
