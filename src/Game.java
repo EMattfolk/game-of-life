@@ -38,7 +38,6 @@ public class Game extends JComponent {
     private long frame_time, update_time, UPS;
     private boolean paused, tileMode;
     private Shape currentShape;
-    private Vec2 current_offset;
     private Frame frame;
     private Field field;
     private Renderer renderer;
@@ -56,7 +55,6 @@ public class Game extends JComponent {
         paused = true;
         tileMode = true;
         currentShape = Shape.EMPTY;
-        current_offset = new Vec2();
         field = new Field(width, height);
         renderer = new Renderer(width, height, tile_size, field);
         shapeHandler = new ShapeHandler();
@@ -120,7 +118,7 @@ public class Game extends JComponent {
         }
         else if (currentShape != null && (mouse_change || field_change)) {
             renderer.render();
-            renderer.draw_shape_outline(mouseHandler.getX(), mouseHandler.getY(), currentShape.getPoints(), current_offset);
+            renderer.draw_shape_outline(mouseHandler.getX(), mouseHandler.getY(), currentShape.getPoints(), currentShape.getMiddle());
             repaint();
         }
         else if (field_change) {
@@ -178,23 +176,19 @@ public class Game extends JComponent {
                 else {
                     if (key == KeyEvent.VK_UP) {
                         currentShape = currentShape.getRotation();
-                        current_offset = currentShape.getMiddle();
                         field.set_changed();
                     }
                     else if (key == KeyEvent.VK_LEFT) {
                         shapeHandler.cycleBackward();
                         currentShape = shapeHandler.getCurrentShape();
-                        current_offset = shapeHandler.get_offset();
                     }
                     else if (key == KeyEvent.VK_RIGHT) {
                         shapeHandler.cycleForward();
                         currentShape = shapeHandler.getCurrentShape();
-                        current_offset = shapeHandler.get_offset();
                     }
                     else if (key == KeyEvent.VK_D) {
                         shapeHandler.deleteCurrentShape();
                         currentShape = shapeHandler.getCurrentShape();
-                        current_offset = shapeHandler.get_offset();
                     }
                 }
             }
@@ -271,7 +265,7 @@ public class Game extends JComponent {
             public void mousePressed(MouseEvent e) {
 
                 if (currentShape != null && e.getButton() == MouseEvent.BUTTON1) {
-                    field.put_shape(mouseHandler.getX(), mouseHandler.getY(), currentShape.getPoints(), current_offset);
+                    field.put_shape(mouseHandler.getX(), mouseHandler.getY(), currentShape.getPoints(), currentShape.getMiddle());
                 }
                 else if (e.getButton() == MouseEvent.BUTTON3) {
                     start_x = mouseHandler.getX();
