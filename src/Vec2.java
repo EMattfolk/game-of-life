@@ -13,6 +13,11 @@ public class Vec2 {
         y = 0;
     }
 
+    public Vec2(int n) {
+        x = n;
+        y = n;
+    }
+
     public Vec2(int x, int y) {
         this.x = x;
         this.y = y;
@@ -23,9 +28,8 @@ public class Vec2 {
         y += dy;
     }
 
-    public void divide(int n) {
-        x /= n;
-        y /= n;
+    public Vec2 dividedBy(int n) {
+        return new Vec2(x / n, y / n);
     }
      public Vec2 offsetBy(Vec2 offset) {
         return new Vec2(x + offset.x, y + offset.y);

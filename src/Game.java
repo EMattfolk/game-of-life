@@ -112,15 +112,15 @@ public class Game extends JComponent {
 
     private void render() {
 
-        boolean field_change = field.has_changed(), mouse_change = mouseHandler.has_changed();
-        if (mouseHandler.is_marking() && (mouse_change || field_change)) {
+        boolean field_change = field.has_changed(), mouse_change = mouseHandler.hasChanged();
+        if (mouseHandler.isMarking() && (mouse_change || field_change)) {
             renderer.render();
-            renderer.draw_marking(mouseHandler.get_x(), mouseHandler.get_y(), mouseHandler.get_mark_x(), mouseHandler.get_mark_y());
+            renderer.draw_marking(mouseHandler.getX(), mouseHandler.getY(), mouseHandler.getMarkX(), mouseHandler.getMarkY());
             repaint();
         }
         else if (currentShape != null && (mouse_change || field_change)) {
             renderer.render();
-            renderer.draw_shape_outline(mouseHandler.get_x(), mouseHandler.get_y(), currentShape.getPoints(), current_offset);
+            renderer.draw_shape_outline(mouseHandler.getX(), mouseHandler.getY(), currentShape.getPoints(), current_offset);
             repaint();
         }
         else if (field_change) {
@@ -223,8 +223,8 @@ public class Game extends JComponent {
 
             public void mousePressed(MouseEvent e) {
 
-                int x = mouseHandler.get_x();
-                int y = mouseHandler.get_y();
+                int x = mouseHandler.getX();
+                int y = mouseHandler.getY();
 
                 if (e.getButton() == MouseEvent.BUTTON1) {
                     left_down = true;
@@ -239,8 +239,8 @@ public class Game extends JComponent {
             public void mouseDragged(MouseEvent e) {
 
                 mouseHandler.set_mouse_position(e.getX(), e.getY());
-                int x = mouseHandler.get_x();
-                int y = mouseHandler.get_y();
+                int x = mouseHandler.getX();
+                int y = mouseHandler.getY();
 
                 if (left_down) {
                     change_tile(x, y, true);
@@ -271,12 +271,12 @@ public class Game extends JComponent {
             public void mousePressed(MouseEvent e) {
 
                 if (currentShape != null && e.getButton() == MouseEvent.BUTTON1) {
-                    field.put_shape(mouseHandler.get_x(), mouseHandler.get_y(), currentShape.getPoints(), current_offset);
+                    field.put_shape(mouseHandler.getX(), mouseHandler.getY(), currentShape.getPoints(), current_offset);
                 }
                 else if (e.getButton() == MouseEvent.BUTTON3) {
-                    start_x = mouseHandler.get_x();
-                    start_y = mouseHandler.get_y();
-                    mouseHandler.set_marking(true);
+                    start_x = mouseHandler.getX();
+                    start_y = mouseHandler.getY();
+                    mouseHandler.setMarking(true);
                     field.set_changed();
                 }
             }
@@ -284,10 +284,10 @@ public class Game extends JComponent {
             public void mouseReleased(MouseEvent e) {
 
                 if (e.getButton() == MouseEvent.BUTTON3) {
-                    mouseHandler.set_marking(false);
-                    end_x = mouseHandler.get_x();
-                    end_y = mouseHandler.get_y();
-                    shapeHandler.add_shape(field.get_shape(start_x, start_y, end_x, end_y));
+                    mouseHandler.setMarking(false);
+                    end_x = mouseHandler.getX();
+                    end_y = mouseHandler.getY();
+                    shapeHandler.add_shape(field.getShape(start_x, start_y, end_x, end_y));
                     field.set_changed();
                 }
             }

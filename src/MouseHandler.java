@@ -5,28 +5,28 @@
  */
 public class MouseHandler {
 
-    private int tile_size, mouse_x, mouse_y, mark_x, mark_y;
+    private int tileSize, mouseX, mouseY, markX, markY;
     private boolean changed, marking;
 
-    public MouseHandler(int tile_size) {
-        this.tile_size = tile_size;
-        mouse_x = -Integer.MAX_VALUE;
-        mouse_y = -Integer.MAX_VALUE;
+    public MouseHandler(int tileSize) {
+        this.tileSize = tileSize;
+        mouseX = -Integer.MAX_VALUE;
+        mouseY = -Integer.MAX_VALUE;
         changed = true;
         marking = false;
     }
 
     public void set_mouse_position(int x, int y) {
-        x = x / tile_size;
-        y = y / tile_size;
-        if (x != mouse_x || y != mouse_y) {
-            mouse_x = x;
-            mouse_y = y;
+        x = x / tileSize;
+        y = y / tileSize;
+        if (x != mouseX || y != mouseY) {
+            mouseX = x;
+            mouseY = y;
             changed = true;
         }
     }
 
-    public boolean has_changed() {
+    public boolean hasChanged() {
         if (changed) {
             changed = false;
             return true;
@@ -34,32 +34,32 @@ public class MouseHandler {
         return false;
     }
 
-    public boolean is_marking() {
+    public boolean isMarking() {
         return marking;
     }
 
-    public void set_marking(boolean b) {
+    public void setMarking(boolean b) {
         if (b) {
-            mark_x = mouse_x;
-            mark_y = mouse_y;
+            markX = mouseX;
+            markY = mouseY;
             changed = true;
         }
         marking = b;
     }
 
-    public int get_x() {
-        return mouse_x;
+    public int getX() {
+        return mouseX;
     }
 
-    public int get_y() {
-        return mouse_y;
+    public int getY() {
+        return mouseY;
     }
 
-    public int get_mark_x() {
-        return mark_x;
+    public int getMarkX() {
+        return markX;
     }
 
-    public int get_mark_y() {
-        return mark_y;
+    public int getMarkY() {
+        return markY;
     }
 }

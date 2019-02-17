@@ -89,24 +89,11 @@ public class ShapeHandler {
         shapes = gson.fromJson(data, shapesType);
     }
 
-    public void add_shape(ArrayList<Vec2> points) {
-        if (!points.isEmpty()) {
-            shapes.add(new Shape(points));
+    public void add_shape(Shape shape) {
+        if (!shape.getPoints().isEmpty()) {
+            shapes.add(shape);
             save();
         }
-    }
-
-    public ArrayList<Vec2> rotate_shape(ArrayList<Vec2> shape) {
-        ArrayList<Vec2> rotation = new ArrayList<>();
-        int max_x = Integer.MIN_VALUE, max_y = Integer.MIN_VALUE;
-        for (Vec2 p : shape) {
-            max_x = p.x > max_x ? p.x : max_x;
-            max_y = p.y > max_y ? p.y : max_y;
-        }
-        for (Vec2 p : shape) {
-            rotation.add(new Vec2(max_y - p.y, p.x - max_x));
-        }
-        return rotation;
     }
 
     public void save() {

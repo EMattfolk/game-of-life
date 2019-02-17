@@ -70,31 +70,23 @@ public class Field {
         }
     }
 
-    public ArrayList<Vec2> get_shape(int x1, int y1, int x2, int y2) {
-        ArrayList<Vec2> shape = new ArrayList<>();
+    public Shape getShape(int x1, int y1, int x2, int y2) {
+        ArrayList<Vec2> points = new ArrayList<>();
         x1 = clamp(0, width - 1,  x1);
         x2 = clamp(0, width - 1,  x2);
         y1 = clamp(0, height - 1, y1);
         y2 = clamp(0, height - 1, y2);
         int min_x = x1 < x2 ? x1 : x2, max_x = x1 > x2 ? x1 : x2;
         int min_y = y1 < y2 ? y1 : y2, max_y = y1 > y2 ? y1 : y2;
-        int shape_min_y = Integer.MAX_VALUE, shape_min_x = Integer.MAX_VALUE;
         for (int i = min_y; i <= max_y; i++) {
             for (int j = min_x; j <= max_x; j++) {
                 if (field[i][j]) {
-                    shape.add(new Vec2(j, i));
-                    shape_min_y = i < shape_min_y ? i : shape_min_y;
-                    shape_min_x = j < shape_min_x ? j : shape_min_x;
+                    points.add(new Vec2(j, i));
                 }
             }
         }
 
-        int l = shape.size();
-        for (int i = 0; i < l; i++) {
-            shape.get(i).translate(-shape_min_x, -shape_min_y);
-        }
-
-        return shape;
+        return new Shape(points);
     }
 
     public boolean get_tile(int x, int y) {
