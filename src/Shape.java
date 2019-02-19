@@ -2,10 +2,10 @@ import java.util.ArrayList;
 
 /**
  * Created by Erik Mattfolk on 2019-02-13.
- * <p>
+ *
  * Stores information about shapes which can be drawn or put on the field
  * The constructor takes an arbitrary collection of Points in the 2D plane and translates them
- * so that the origin is in (0, 0)
+ * so that the origin is (0, 0)
  */
 public class Shape {
 

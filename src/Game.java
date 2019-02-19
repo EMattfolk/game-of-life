@@ -4,18 +4,17 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
-import java.util.ConcurrentModificationException;
 
 /**
  * Created by Erik Mattfolk on 2017-04-27.
- * <p>
+ * Refactored on 2019-02-17
+ *
  * Game of Life recreated by Erik Mattfolk
- * <p>
+ *
  * Rules:
  * Tile is "born" if it has 3 neighbours
  * Tile "dies" if it has less than two neighbors or greater than three neighbors
- * <p>
+ *
  * Controls:
  * Create life: Left click (hold and drag to create more)
  * Kill life: Right click (hold and drag to kill more)
@@ -26,14 +25,14 @@ import java.util.ConcurrentModificationException;
  * Printing shapes: press 0-9 or a-z and click with left mouse button
  * Rotate shape: control key
  * Clear board: Space
- * <p>
+ *
  * Version history:
  * 1.0: It works
  * 1.0.1: Fixed the game crashing at "high" loads and if sleep time was negative
  * 1.1: Added saving, printing and rotation of shapes and restructured the program which led to better performance
  */
 
-public class Game extends JComponent {
+public class Game extends JComponent{
     private final long MILLION = 1000000, BILLION = 1000000000, FPS = 60;
     private long frame_time, update_time, UPS;
     private boolean paused, tileMode;
@@ -42,25 +41,22 @@ public class Game extends JComponent {
     private Field field;
     private Renderer renderer;
     private ShapeHandler shapeHandler;
-    private MouseHandler mouseHandler;
-    private BufferedImage image;
+    private MouseHelper mouseHelper;
     private MouseAdapter tileMouse, shapeMouse;
 
     public Game(Setting setting) {
 
         int width = setting.width;
         int height = setting.height;
-        int tile_size = setting.size + 1; // +1 is the border
+        int tile_size = setting.size;
         UPS = 10;
         paused = true;
         tileMode = true;
         currentShape = Shape.EMPTY;
         field = new Field(width, height);
-        renderer = new Renderer(width, height, tile_size, field);
+        renderer = new Renderer(width, height, tile_size);
         shapeHandler = new ShapeHandler();
-        mouseHandler = new MouseHandler(tile_size);
-        image = renderer.get_image();
-        setPreferredSize(get_frame_dimension());
+        mouseHelper = renderer.getMousehelper();
         setup_listeners();
     }
 
@@ -78,14 +74,10 @@ public class Game extends JComponent {
             if (last_time + update_time < start_time) {
                 last_time += update_time;
                 if (!paused) {
-                    try {
-                        game_update();
-                    }
-                    catch (ConcurrentModificationException e) {
-                        System.out.println("Concurrent Modification: You are probably going too fast");
-                    }
+                    gameUpdate();
                 }
             }
+
             render();
 
             end_time = System.nanoTime();
@@ -104,27 +96,17 @@ public class Game extends JComponent {
         }
     }
 
-    private void game_update() {
+    private void gameUpdate() {
         field.update();
     }
 
     private void render() {
-
-        boolean field_change = field.has_changed(), mouse_change = mouseHandler.hasChanged();
-        if (mouseHandler.isMarking() && (mouse_change || field_change)) {
-            renderer.render();
-            renderer.draw_marking(mouseHandler.getX(), mouseHandler.getY(), mouseHandler.getMarkX(), mouseHandler.getMarkY());
-            repaint();
-        }
-        else if (currentShape != null && (mouse_change || field_change)) {
-            renderer.render();
-            renderer.draw_shape_outline(mouseHandler.getX(), mouseHandler.getY(), currentShape.getPoints(), currentShape.getMiddle());
-            repaint();
-        }
-        else if (field_change) {
-            renderer.render();
-            repaint();
-        }
+        renderer.clear();
+        renderer.drawGridlines();
+        renderer.drawShapeOutline(currentShape, mouseHelper.getPos());
+        renderer.drawActiveTiles(field);
+        renderer.drawMarking(mouseHelper);
+        repaint();
     }
 
     private void setup_listeners() {
@@ -158,7 +140,7 @@ public class Game extends JComponent {
                 if (tileMode) {
                     if (key == KeyEvent.VK_UP) {
                         if (paused) {
-                            game_update();
+                            gameUpdate();
                         }
                     }
                     else if (key == KeyEvent.VK_LEFT) {
@@ -176,7 +158,6 @@ public class Game extends JComponent {
                 else {
                     if (key == KeyEvent.VK_UP) {
                         currentShape = currentShape.getRotation();
-                        field.set_changed();
                     }
                     else if (key == KeyEvent.VK_LEFT) {
                         shapeHandler.cycleBackward();
@@ -217,8 +198,8 @@ public class Game extends JComponent {
 
             public void mousePressed(MouseEvent e) {
 
-                int x = mouseHandler.getX();
-                int y = mouseHandler.getY();
+                int x = mouseHelper.getX();
+                int y = mouseHelper.getY();
 
                 if (e.getButton() == MouseEvent.BUTTON1) {
                     left_down = true;
@@ -232,9 +213,9 @@ public class Game extends JComponent {
 
             public void mouseDragged(MouseEvent e) {
 
-                mouseHandler.set_mouse_position(e.getX(), e.getY());
-                int x = mouseHandler.getX();
-                int y = mouseHandler.getY();
+                mouseHelper.setMousePosition(e.getX(), e.getY());
+                int x = mouseHelper.getX();
+                int y = mouseHelper.getY();
 
                 if (left_down) {
                     change_tile(x, y, true);
@@ -255,43 +236,38 @@ public class Game extends JComponent {
             }
 
             public void mouseMoved(MouseEvent e) {
-                mouseHandler.set_mouse_position(e.getX(), e.getY());
+                mouseHelper.setMousePosition(e.getX(), e.getY());
             }
         };
         shapeMouse = new MouseAdapter() {
 
-            int start_x, start_y, end_x, end_y;
-
             public void mousePressed(MouseEvent e) {
 
-                if (currentShape != null && e.getButton() == MouseEvent.BUTTON1) {
-                    field.put_shape(mouseHandler.getX(), mouseHandler.getY(), currentShape.getPoints(), currentShape.getMiddle());
+                if (e.getButton() == MouseEvent.BUTTON1) {
+                    field.put_shape(mouseHelper.getX(), mouseHelper.getY(), currentShape.getPoints(), currentShape.getMiddle());
                 }
                 else if (e.getButton() == MouseEvent.BUTTON3) {
-                    start_x = mouseHandler.getX();
-                    start_y = mouseHandler.getY();
-                    mouseHandler.setMarking(true);
-                    field.set_changed();
+                    mouseHelper.startMarking();
+                    currentShape = Shape.EMPTY;
                 }
             }
 
             public void mouseReleased(MouseEvent e) {
 
                 if (e.getButton() == MouseEvent.BUTTON3) {
-                    mouseHandler.setMarking(false);
-                    end_x = mouseHandler.getX();
-                    end_y = mouseHandler.getY();
-                    shapeHandler.add_shape(field.getShape(start_x, start_y, end_x, end_y));
-                    field.set_changed();
+                    mouseHelper.endMarking();
+                    shapeHandler.add_shape(field.getShape(mouseHelper.getMarking()));
+                    shapeHandler.cycleToEnd();
+                    currentShape = shapeHandler.getCurrentShape();
                 }
             }
 
             public void mouseDragged(MouseEvent e) {
-                mouseHandler.set_mouse_position(e.getX(), e.getY());
+                mouseHelper.setMousePosition(e.getX(), e.getY());
             }
 
             public void mouseMoved(MouseEvent e) {
-                mouseHandler.set_mouse_position(e.getX(), e.getY());
+                mouseHelper.setMousePosition(e.getX(), e.getY());
             }
         };
     }
@@ -314,11 +290,11 @@ public class Game extends JComponent {
     }
 
     public void paint(Graphics g) {
-        g.drawImage(image, 0, 0, null);
+        g.drawImage(renderer.getImage(), 0, 0, null);
     }
 
-    public Dimension get_frame_dimension() {
-        return new Dimension(image.getWidth(), image.getHeight());
+    public Dimension getPreferredSize() {
+        return renderer.getDimension();
     }
 
     public void setFrame(Frame frame) {

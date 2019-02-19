@@ -1,6 +1,6 @@
 /**
  * Created by Erik Mattfolk on 2017-04-27.
- * <p>
+ *
  * Runs the program
  */
 public class Main {

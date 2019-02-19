@@ -1,129 +1,103 @@
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferInt;
-import java.util.ArrayList;
 
 /**
  * Created by Erik Mattfolk on 2017-04-27.
- * <p>
+ * Refactored on 2019-02-19
+ *
  * Renders the game on a BufferedImage
  */
 public class Renderer {
-    private int width, height, image_width, image_height, tile_size, border_color, shape_color, marking_color_blank, marking_color_tile;
-    private Field field;
-    private BufferedImage image;
-    private int[] pixels;
 
-    public Renderer(int width, int height, int tile_size, Field field) {
+    private static final int GRID_WIDTH = 1;
+    private static final Color BACKGROUND = Color.BLACK;
+    private static final Color TILE = Color.LIGHT_GRAY;
+    private static final Color OUTLINE = Color.DARK_GRAY;
+    private static final Color GRIDLINE = Color.DARK_GRAY.darker(); // DARKER hahahaha!!
+    private static final Color MARKING = new Color(0, 0, 255, 50);
+
+    private int width, height, tileSize;
+    private Dimension dimension;
+    private BufferedImage image;
+    private Graphics g;
+
+    public Renderer(int width, int height, int tileSize) {
         this.width = width;
         this.height = height;
-        this.tile_size = tile_size;
-        this.field = field;
-        border_color = Color.GRAY.getRGB();
-        shape_color = Color.LIGHT_GRAY.getRGB();
-        set_marking_color();
-        image = new BufferedImage(width * (tile_size) + 1, height * (tile_size) + 1, BufferedImage.TYPE_INT_RGB);
-        image_width = image.getWidth();
-        image_height = image.getHeight();
-        pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
-        paint_border();
-        render();
+        this.tileSize = tileSize;
+        dimension = new Dimension(
+                width * (tileSize + GRID_WIDTH) - GRID_WIDTH,
+                height * (tileSize + GRID_WIDTH) - GRID_WIDTH
+        );
+        image = new BufferedImage(dimension.width, dimension.height, BufferedImage.TYPE_INT_RGB);
+        g = image.getGraphics();
     }
 
-    public void render() {
-        int color;
-        for (int y = 0; y < image_height - 1; y += tile_size) {
-            for (int x = 0; x < image_width - 1; x += tile_size) {
-                color = field.get_tile(x / tile_size, y / tile_size) ? 0 : Integer.MAX_VALUE;
-                if (pixels[(y + 1) * image_width + x + 1] == color) continue;
+    public void clear() {
+        g.setColor(BACKGROUND);
+        g.fillRect(0, 0, dimension.width, dimension.height);
+    }
 
-                for (int i = 1; i < tile_size; i++) {
-                    for (int j = 1; j < tile_size; j++) {
-                        pixels[(y + i) * image_width + x + j] = color;
-                    }
+    public void drawGridlines() {
+        g.setColor(GRIDLINE);
+        for (int i = 1; i < width; i++) {
+            int x = i * (tileSize + GRID_WIDTH) - GRID_WIDTH;
+            g.drawLine(x, 0, x, dimension.height);
+        }
+        for (int i = 1; i < height; i++) {
+            int y = i * (tileSize + GRID_WIDTH) - GRID_WIDTH;
+            g.drawLine(0, y, dimension.width, y);
+        }
+    }
+
+    public void drawActiveTiles(Field field) {
+        g.setColor(TILE);
+        for (int i = 0; i < height; i++) {
+            int y = i * (tileSize + GRID_WIDTH);
+            for (int j = 0; j < height; j++) {
+                int x = j * (tileSize + GRID_WIDTH);
+                if (field.get_tile(j, i)) {
+                    g.fillRect(x, y, tileSize, tileSize);
                 }
             }
         }
     }
 
-    public void draw_shape_outline(int mouse_x, int mouse_y, ArrayList<Vec2> shape, Vec2 offset) {
-        int x, y;
-        for (Vec2 p : shape) {
-            x = p.x + mouse_x - offset.x;
-            y = p.y + mouse_y - offset.y;
-            if (in_bounds(x, y) && !field.get_tile(x, y)) {
-                x *= tile_size;
-                y *= tile_size;
-                for (int i = 1; i < tile_size; i++) {
-                    for (int j = 1; j < tile_size; j++) {
-                        pixels[(y + i) * image_width + x + j] = shape_color;
-                    }
-                }
-            }
+    public void drawMarking(MouseHelper helper) {
+        if (!helper.isMarking()) return;
+        Rectangle marking = helper.getMarking();
+        g.setColor(MARKING);
+        g.fillRect(
+            marking.x * (tileSize + GRID_WIDTH),
+            marking.y * (tileSize + GRID_WIDTH),
+            marking.width * (tileSize + GRID_WIDTH),
+            marking.height * (tileSize + GRID_WIDTH)
+        );
+    }
+
+    public void drawShapeOutline(Shape shape, Vec2 pos) {
+        g.setColor(OUTLINE);
+        Vec2 middle = shape.getMiddle();
+        pos.translate(-middle.x, -middle.y);
+        for (Vec2 coord : shape.getPoints()) {
+            g.fillRect(
+                (tileSize + GRID_WIDTH) * (coord.x + pos.x),
+                (tileSize + GRID_WIDTH) * (coord.y + pos.y),
+                tileSize,
+                tileSize
+            );
         }
     }
 
-    public void draw_marking(int x1, int y1, int x2, int y2) {
-        int min_x, max_x, min_y, max_y, x, y, index;
-        x1 = put_within_bounds(x1, width);
-        x2 = put_within_bounds(x2, width);
-        y1 = put_within_bounds(y1, height);
-        y2 = put_within_bounds(y2, height);
-        min_x = x1 < x2 ? x1 : x2;
-        min_y = y1 < y2 ? y1 : y2;
-        max_x = x1 > x2 ? x1 : x2;
-        max_y = y1 > y2 ? y1 : y2;
-        for (int i = min_y; i <= max_y; i++) {
-            y = i * tile_size;
-            for (int j = min_x; j <= max_x; j++) {
-                x = j * tile_size;
-                for (int k = 1; k < tile_size; k++) {
-                    for (int l = 1; l < tile_size; l++) {
-                        index = (y + k) * image_width + x + l;
-                        if (pixels[index] == 0) {
-                            pixels[index] = marking_color_tile;
-                        } else {
-                            pixels[index] = marking_color_blank;
-                        }
-                    }
-                }
-            }
-        }
+    public Dimension getDimension() {
+        return dimension;
     }
 
-    private void paint_border() {
-        for (int i = 0; i < image_width; i++) {
-            pixels[image_width * (image_height - 1) + i] = border_color;
-        }
-        for (int i = 0; i < image_height; i++) {
-            pixels[image_width * i + image_width - 1] = border_color;
-        }
-        for (int y = 0; y < image_height - 1; y += tile_size) {
-            for (int x = 0; x < image_width - 1; x += tile_size) {
-                for (int i = 0; i < tile_size; i++) {
-                    pixels[(y + i) * image_width + x] = border_color;
-                    pixels[y * image_width + x + i] = border_color;
-                }
-            }
-        }
-    }
-
-    private boolean in_bounds(int x, int y) {
-        return y >= 0 && y < height && x >= 0 && x < width;
-    }
-
-    private int put_within_bounds(int n, int constaint) {
-        n = n < 0 ? 0 : n;
-        n = n >= constaint ? constaint - 1 : n;
-        return n;
-    }
-
-    private void set_marking_color() {
-        marking_color_blank = -8605953;
-        marking_color_tile = -3181;
-    }
-
-    public BufferedImage get_image() {
+    public BufferedImage getImage() {
         return image;
+    }
+
+    public MouseHelper getMousehelper() {
+        return new MouseHelper(tileSize + GRID_WIDTH);
     }
 }

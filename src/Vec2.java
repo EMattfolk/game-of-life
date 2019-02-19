@@ -1,6 +1,6 @@
 /**
  * Created by Erik Mattfolk on 2019-02-13.
- * <p>
+ *
  * A simple 2D Vector implementation
  */
 public class Vec2 {
@@ -31,7 +31,12 @@ public class Vec2 {
     public Vec2 dividedBy(int n) {
         return new Vec2(x / n, y / n);
     }
-     public Vec2 offsetBy(Vec2 offset) {
-        return new Vec2(x + offset.x, y + offset.y);
-     }
+
+    public Vec2 offsetBy(Vec2 offset) {
+       return new Vec2(x + offset.x, y + offset.y);
+    }
+
+    public Vec2 copy() {
+        return new Vec2(x, y);
+    }
 }

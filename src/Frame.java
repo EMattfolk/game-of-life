@@ -3,7 +3,7 @@ import java.awt.*;
 
 /**
  * Created by Erik Mattfolk on 2017-04-27.
- * <p>
+ *
  * The JFrame on which the game is displayed
  */
 public class Frame extends JFrame {

@@ -10,7 +10,7 @@ import java.util.ArrayList;
 /**
  * Created by Erik Mattfolk on 2017-05-06.
  * Refactored on 2019-02-13
- * <p>
+ *
  * Loades, saves, returns and cycles Shapes to be put on the field
  */
 public class ShapeHandler {

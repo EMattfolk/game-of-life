@@ -1,15 +1,15 @@
+import java.awt.*;
 import java.util.ArrayList;
-import java.util.HashSet;
 
 /**
  * Created by Erik Mattfolk on 2017-04-27.
- * <p>
+ * Refactored on 2019-02-16
+ *
  * Keeps track of, and updates cells.
  */
 public class Field {
 
     private int width, height;
-    private boolean changed;
     private boolean[][] field;
     private int[][] neighbour_count;
     private ArrayList<Vec2>[][] adjacent_indexes;
@@ -19,7 +19,6 @@ public class Field {
     public Field(int width, int height) {
         this.width = width;
         this.height = height;
-        changed = true;
         field = new boolean[height][width];
         neighbour_count = new int[height][width];
         decrease = new ArrayList<>();
@@ -33,12 +32,10 @@ public class Field {
             int x = coord.x, y = coord.y;
             if (!field[y][x] && neighbour_count[y][x] == 3) {
                 flip_tile(x, y);
-                increase.add(new Vec2(x, y));
-                changed = true;
+                increase.add(coord);
             } else if (field[y][x] && (neighbour_count[y][x] < 2 || neighbour_count[y][x] > 3)) {
                 flip_tile(x, y);
                 decrease.add(coord);
-                changed = true;
             }
         }
         check_indexes.clear();
@@ -57,7 +54,6 @@ public class Field {
         if (!in_bounds(x, y) || field[y][x] == b) return;
         field[y][x] = b;
         change_neighbors(x, y, b ? 1 : -1);
-        changed = true;
     }
 
     public void flip_tile(int x, int y) {
@@ -70,16 +66,12 @@ public class Field {
         }
     }
 
-    public Shape getShape(int x1, int y1, int x2, int y2) {
+    public Shape getShape(Rectangle bounds) {
         ArrayList<Vec2> points = new ArrayList<>();
-        x1 = clamp(0, width - 1,  x1);
-        x2 = clamp(0, width - 1,  x2);
-        y1 = clamp(0, height - 1, y1);
-        y2 = clamp(0, height - 1, y2);
-        int min_x = x1 < x2 ? x1 : x2, max_x = x1 > x2 ? x1 : x2;
-        int min_y = y1 < y2 ? y1 : y2, max_y = y1 > y2 ? y1 : y2;
-        for (int i = min_y; i <= max_y; i++) {
-            for (int j = min_x; j <= max_x; j++) {
+        int endX = Math.min(bounds.x + bounds.width, width);
+        int endY = Math.min(bounds.y + bounds.height, height);
+        for (int i = bounds.y; i < endY; i++) {
+            for (int j = bounds.x; j < endX; j++) {
                 if (field[i][j]) {
                     points.add(new Vec2(j, i));
                 }
@@ -93,18 +85,6 @@ public class Field {
         return field[y][x];
     }
 
-    public boolean has_changed() {
-        if (changed) {
-            changed = false;
-            return true;
-        }
-        return false;
-    }
-
-    public void set_changed() {
-        changed = true;
-    }
-
     public void reset() {
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
@@ -115,7 +95,6 @@ public class Field {
             }
         }
         check_indexes.clear();
-        changed = true;
     }
 
     private boolean in_bounds(int x, int y) {
