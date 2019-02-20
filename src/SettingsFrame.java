@@ -1,7 +1,5 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 /**
  * Created by Pwnxl on 2017-04-28.
@@ -10,12 +8,10 @@ import java.awt.event.ActionListener;
  */
 public class SettingsFrame extends JFrame {
 
-    JLabel width_label, height_label, size_label;
-    JPanel left, right;
-    JTextField width_text, height_text, size_text;
-    JButton start;
-    boolean done;
-    int width, height, size;
+    private JPanel left, right;
+    private JTextField widthText, heightText, sizeText;
+    private boolean done;
+    private int width, height, size;
 
     public SettingsFrame() {
         done = false;
@@ -25,16 +21,16 @@ public class SettingsFrame extends JFrame {
         setTitle("Game of Life");
         setResizable(false);
 
-        setup_panels();
-        setup_labels();
-        setup_textfields();
+        setupPanels();
+        setupLabels();
+        setupTextfields();
         setup_button();
 
         pack();
         setVisible(true);
     }
 
-    private void setup_panels() {
+    private void setupPanels() {
         left = new JPanel();
         right = new JPanel();
         left.setLayout(new BorderLayout());
@@ -43,56 +39,54 @@ public class SettingsFrame extends JFrame {
         add(right, BorderLayout.CENTER);
     }
 
-    private void setup_labels() {
-        width_label = new JLabel(" Width");
-        height_label = new JLabel(" Height");
-        size_label = new JLabel(" Tile Size ");
-        left.add(width_label, BorderLayout.NORTH);
-        left.add(height_label, BorderLayout.CENTER);
-        left.add(size_label, BorderLayout.SOUTH);
+    private void setupLabels() {
+        JLabel widthLabel = new JLabel(" Width");
+        JLabel heightLabel = new JLabel(" Height");
+        JLabel sizeLabel = new JLabel(" Tile Size ");
+        left.add(widthLabel, BorderLayout.NORTH);
+        left.add(heightLabel, BorderLayout.CENTER);
+        left.add(sizeLabel, BorderLayout.SOUTH);
     }
 
-    private void setup_textfields() {
-        width_text = new JTextField("45");
-        height_text = new JTextField("45");
-        size_text = new JTextField("15");
-        width_text.setPreferredSize(new Dimension(120, 20));
-        height_text.setPreferredSize(new Dimension(120, 20));
-        size_text.setPreferredSize(new Dimension(120, 20));
-        right.add(width_text, BorderLayout.NORTH);
-        right.add(height_text, BorderLayout.CENTER);
-        right.add(size_text, BorderLayout.SOUTH);
+    private void setupTextfields() {
+        widthText = new JTextField("45");
+        heightText = new JTextField("45");
+        sizeText = new JTextField("15");
+        widthText.setPreferredSize(new Dimension(120, 20));
+        heightText.setPreferredSize(new Dimension(120, 20));
+        sizeText.setPreferredSize(new Dimension(120, 20));
+        right.add(widthText, BorderLayout.NORTH);
+        right.add(heightText, BorderLayout.CENTER);
+        right.add(sizeText, BorderLayout.SOUTH);
     }
 
     private void setup_button() {
-        start = new JButton("Start");
-        start.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                boolean flag = true;
-                try {
-                    width = Integer.parseInt(width_text.getText());
-                    if (width < 1) throw new NumberFormatException();
-                } catch (NumberFormatException ex) {
-                    width_text.setText("error");
-                    flag = false;
-                }
-                try {
-                    height = Integer.parseInt(height_text.getText());
-                    if (height < 1) throw new NumberFormatException();
-                } catch (NumberFormatException ex) {
-                    height_text.setText("error");
-                    flag = false;
-                }
-                try {
-                    size = Integer.parseInt(size_text.getText());
-                    if (size < 1) throw new NumberFormatException();
-                } catch (NumberFormatException ex) {
-                    size_text.setText("error");
-                    flag = false;
-                }
-                if (flag) {
-                    done = true;
-                }
+        JButton start = new JButton("Start");
+        start.addActionListener(e -> {
+            boolean flag = true;
+            try {
+                width = Integer.parseInt(widthText.getText());
+                if (width < 1) throw new NumberFormatException();
+            } catch (NumberFormatException ex) {
+                widthText.setText("error");
+                flag = false;
+            }
+            try {
+                height = Integer.parseInt(heightText.getText());
+                if (height < 1) throw new NumberFormatException();
+            } catch (NumberFormatException ex) {
+                heightText.setText("error");
+                flag = false;
+            }
+            try {
+                size = Integer.parseInt(sizeText.getText());
+                if (size < 1) throw new NumberFormatException();
+            } catch (NumberFormatException ex) {
+                sizeText.setText("error");
+                flag = false;
+            }
+            if (flag) {
+                done = true;
             }
         });
         add(start, BorderLayout.EAST);

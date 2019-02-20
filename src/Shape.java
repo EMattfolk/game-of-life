@@ -29,6 +29,9 @@ public class Shape {
         middle = max.dividedBy(2);
     }
 
+    /**
+     * @return A new shape which is the old one but rotated 90 degrees right
+     */
     public Shape getRotation() {
         ArrayList<Vec2> rotated = new ArrayList<>();
         int maxX = Integer.MIN_VALUE, maxY = Integer.MIN_VALUE;

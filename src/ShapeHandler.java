@@ -11,13 +11,13 @@ import java.util.ArrayList;
  * Created by Erik Mattfolk on 2017-05-06.
  * Refactored on 2019-02-13
  *
- * Loades, saves, returns and cycles Shapes to be put on the field
+ * Loads, saves, returns and cycles Shapes to be put on the field
  */
 public class ShapeHandler {
 
     public static final String SAVE_PATH = "shapes.json";
-    private static final Type shapesType = new TypeToken<ArrayList<Shape>>() {
-    }.getType();
+    private static final Type shapesType = new TypeToken<ArrayList<Shape>>() {}.getType();
+
     private int currentShape;
     private ArrayList<Shape> shapes;
     private Gson gson;
@@ -42,10 +42,6 @@ public class ShapeHandler {
         shapes.remove(currentShape);
         if (shapes.size() == 0) return;
         currentShape %= shapes.size();
-    }
-
-    public Vec2 get_offset() {
-        return getCurrentShape().getMiddle();
     }
 
     public void cycleForward() {

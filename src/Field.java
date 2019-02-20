@@ -101,12 +101,6 @@ public class Field {
         return y >= 0 && y < height && x >= 0 && x < width;
     }
 
-    private int clamp(int min, int max, int n) {
-        if (n < min) return min;
-        if (n > max) return max;
-        return n;
-    }
-
     private void change_neighbors(int x, int y, int change) {
         check_indexes.add(new Vec2(x, y));
         for (Vec2 coord : adjacent_indexes[y][x]) {

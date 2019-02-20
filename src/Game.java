@@ -33,7 +33,7 @@ import java.awt.event.MouseEvent;
  */
 
 public class Game extends JComponent{
-    private final long MILLION = 1000000, BILLION = 1000000000, FPS = 60;
+    private static final long MILLION = 1000000, BILLION = 1000000000, FPS = 60;
     private long frame_time, update_time, UPS;
     private boolean paused, tileMode;
     private Shape currentShape;
