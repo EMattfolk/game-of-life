@@ -23,12 +23,13 @@ import java.awt.event.MouseEvent;
  * In Tilemode (Default)
  * Create life:               Left click  (hold and drag to create more)
  * Kill life:                 Right click (hold and drag to kill more)
- * Change simulation speed:   Right/Left arrow key
+ * Change simulation speed:   Right/Left arrow keys
  * Simulate one generation:   Up arrow key
  *
  * In Shapemode
  * Save shapes:               Mark area using Right mouse button
  * Place shapes:              Left click
+ * Cycle shapes:              Left/Right arrow keys
  * Rotate shapes:             Up arrow key
  * Delete shapes:             D
  *

@@ -7,21 +7,27 @@
  * Fast simulation up to 200 updates per second
 
 ## Rules:
-* Tile is _**born**_ if it has ```3``` neighbors
-* Tile _**dies**_ if it has less than ```2``` neighbors or greater than ```3``` neighbors
+* Tile is _**born**_ if it has **3** neighbors
+* Tile _**dies**_ if it has less than **2** neighbors or greater than **3** neighbors
 
 ## Controls:
-* Switch mode:               Shift
-* Start/Stop simulation:     Space
-* Clear board:               C
-* In Tilemode (Default)
-* Create life:               Left click  (hold and drag to create more)
-* Kill life:                 Right click (hold and drag to kill more)
-* Change simulation speed:   Right/Left arrow key
-* Simulate one generation:   Up arrow key
-*
-* In Shapemode
-* Save shapes:               Mark area using Right mouse button
-* Place shapes:              Left click
-* Rotate shapes:             Up arrow key
-* Delete shapes:             D
+|Universal              |Key    |
+|-----------------------|-------|
+| Switch mode           | Shift |
+| Start/Stop simulation | Space |
+| Clear board           | C     |
+
+|Tilemode                 |Key               |
+|-------------------------|------------------|
+| Create life             | Left click       |
+| Kill life               | Right click      |
+| Change simulation speed | Right/Left arrow |
+| Simulate one generation | Up arrow         |
+
+|Shapemode     |Key                      |
+|--------------|-------------------------|
+| Save shape   | Right click (mark area) |
+| Place shape  | Left click              |
+| Cycle shapes | Left/Right arrow        |
+| Rotate shape | Up arrow                |
+| Delete shape | D                       |
