@@ -40,7 +40,13 @@ import java.awt.event.MouseEvent;
  */
 
 public class Game extends JComponent{
-    private static final long MILLION = 1000000, BILLION = 1000000000, FPS = 60;
+    private static final String TITLE_STRING = "Game of Life - UPS: %d - %s";
+    private static final String TILE_MODE = "Tile mode";
+    private static final String SHAPE_MODE = "Shape mode";
+    private static final long MILLION = 1000000;
+    private static final long BILLION = 1000000000;
+    private static final long FPS = 60;
+
     private long frame_time, update_time, UPS;
     private boolean paused, tileMode;
     private Shape currentShape;
@@ -132,6 +138,7 @@ public class Game extends JComponent{
                 }
                 else if (key == KeyEvent.VK_SHIFT) {
                     tileMode = !tileMode;
+                    updateFrameTitle();
                     removeMouse();
                     if (tileMode) {
                         currentShape = Shape.EMPTY;
@@ -290,7 +297,11 @@ public class Game extends JComponent{
         }
 
         update_time = BILLION / UPS;
-        frame.setTitle("Game of Life   UPS: " + UPS);
+        updateFrameTitle();
+    }
+
+    private void updateFrameTitle() {
+        frame.setTitle(String.format(TITLE_STRING, UPS, tileMode ? TILE_MODE : SHAPE_MODE));
     }
 
     public void paint(Graphics g) {
@@ -303,5 +314,6 @@ public class Game extends JComponent{
 
     public void setFrame(Frame frame) {
         this.frame = frame;
+        updateFrameTitle();
     }
 }
