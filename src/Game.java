@@ -9,11 +9,11 @@ import java.awt.event.MouseEvent;
  * Created by Erik Mattfolk on 2017-04-27.
  * Refactored on 2019-02-17
  *
- * Game of Life recreated by Erik Mattfolk
+ * Game of Life
  *
  * Rules:
- * Tile is "born" if it has 3 neighbours
- * Tile "dies" if it has less than two neighbors or greater than three neighbors
+ * Tile is "born" if it has 3 neighbors
+ * Tile "dies" if it has less than 2 neighbors or greater than 3 neighbors
  *
  * Controls:
  * Switch mode:               Shift
