@@ -2,9 +2,10 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * Created by Pwnxl on 2017-04-28.
- * <p>
- * Allows the user to input settings
+ * Created by Erik Mattfolk on 2017-04-28.
+ *
+ * This is a prompt window that allows the user to input settings.
+ * It is shown at the start of the game.
  */
 public class SettingsFrame extends JFrame {
 
@@ -24,7 +25,7 @@ public class SettingsFrame extends JFrame {
         setupPanels();
         setupLabels();
         setupTextfields();
-        setup_button();
+        setupButton();
 
         pack();
         setVisible(true);
@@ -60,34 +61,32 @@ public class SettingsFrame extends JFrame {
         right.add(sizeText, BorderLayout.SOUTH);
     }
 
-    private void setup_button() {
+    private void setupButton() {
         JButton start = new JButton("Start");
         start.addActionListener(e -> {
-            boolean flag = true;
+            boolean hasAllInputs = true;
             try {
                 width = Integer.parseInt(widthText.getText());
                 if (width < 1) throw new NumberFormatException();
             } catch (NumberFormatException ex) {
                 widthText.setText("error");
-                flag = false;
+                hasAllInputs = false;
             }
             try {
                 height = Integer.parseInt(heightText.getText());
                 if (height < 1) throw new NumberFormatException();
             } catch (NumberFormatException ex) {
                 heightText.setText("error");
-                flag = false;
+                hasAllInputs = false;
             }
             try {
                 size = Integer.parseInt(sizeText.getText());
                 if (size < 1) throw new NumberFormatException();
             } catch (NumberFormatException ex) {
                 sizeText.setText("error");
-                flag = false;
+                hasAllInputs = false;
             }
-            if (flag) {
-                done = true;
-            }
+            done = hasAllInputs;
         });
         add(start, BorderLayout.EAST);
     }
@@ -96,7 +95,7 @@ public class SettingsFrame extends JFrame {
         return done;
     }
 
-    public Setting get_setting() {
+    public Setting getSetting() {
         return new Setting(width, height, size);
     }
 }

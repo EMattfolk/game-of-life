@@ -11,7 +11,12 @@ import java.util.ArrayList;
  * Created by Erik Mattfolk on 2017-05-06.
  * Refactored on 2019-02-13
  *
- * Loads, saves, returns and cycles Shapes to be put on the field
+ * This class handles shapes (wow!)
+ * When the class is instantiated it reads from SAVE_PATH file and
+ * creates the shapes associated with the data.
+ * Shapes are then accessed by the getCurrentShape method and
+ * cycling methods. Its purpose is to provide a easy way to save,
+ * store and access shapes.
  */
 public class ShapeHandler {
 
@@ -40,6 +45,7 @@ public class ShapeHandler {
     public void deleteCurrentShape() {
         if (shapes.size() == 0) return;
         shapes.remove(currentShape);
+        save();
         if (shapes.size() == 0) return;
         currentShape %= shapes.size();
     }

@@ -5,64 +5,73 @@ import java.util.ArrayList;
  * Created by Erik Mattfolk on 2017-04-27.
  * Refactored on 2019-02-16
  *
- * Keeps track of, and updates cells.
+ * This class keeps track of the field which you see in-game.
+ * The field is stored as a 2D array of booleans indicating whether
+ * a cell is alive or not. It also keeps track of data that is
+ * necessary for updating the field, such as neighbor count.
  */
 public class Field {
 
+    // Game rules
+    private static final int LIFE_COUNT = 3;
+    private static final int DEATH_LOWER = 2;
+    private static final int DEATH_UPPER = 3;
+
     private int width, height;
     private boolean[][] field;
-    private int[][] neighbour_count;
-    private ArrayList<Vec2>[][] adjacent_indexes;
+    private int[][] neighbourCount;
+    private ArrayList<Vec2>[][] adjacentPoints;
     private ArrayList<Vec2> decrease, increase;
-    private ArrayList<Vec2> check_indexes;
+    private ArrayList<Vec2> toUpdate;
 
     public Field(int width, int height) {
         this.width = width;
         this.height = height;
         field = new boolean[height][width];
-        neighbour_count = new int[height][width];
+        neighbourCount = new int[height][width];
         decrease = new ArrayList<>();
         increase = new ArrayList<>();
-        check_indexes = new ArrayList<>();
-        createAdjacentIndexes();
+        toUpdate = new ArrayList<>();
+        createAdjacentPoints();
     }
 
     public void update() {
-        for (Vec2 coord : check_indexes) {
+        for (Vec2 coord : toUpdate) {
             int x = coord.x, y = coord.y;
-            if (!field[y][x] && neighbour_count[y][x] == 3) {
-                flip_tile(x, y);
+            int neighbors = neighbourCount[y][x];
+            if (!field[y][x] && neighbors == LIFE_COUNT) {
+                flipTile(x, y);
                 increase.add(coord);
-            } else if (field[y][x] && (neighbour_count[y][x] < 2 || neighbour_count[y][x] > 3)) {
-                flip_tile(x, y);
+            } else if (field[y][x] && (neighbors < DEATH_LOWER || neighbors > DEATH_UPPER)) {
+                flipTile(x, y);
                 decrease.add(coord);
             }
         }
-        check_indexes.clear();
+        toUpdate.clear();
         for (Vec2 coord : increase) {
-            change_neighbors(coord.x, coord.y, 1);
+            changeNeighbors(coord.x, coord.y, 1);
         }
         for (Vec2 coord : decrease) {
-            change_neighbors(coord.x, coord.y, -1);
+            changeNeighbors(coord.x, coord.y, -1);
         }
         increase.clear();
         decrease.clear();
     }
 
-    public void set_tile(int x, int y, boolean b)
+    public void setTile(int x, int y, boolean b)
     {
-        if (!in_bounds(x, y) || field[y][x] == b) return;
+        if (!withinBounds(x, y) || field[y][x] == b) return;
         field[y][x] = b;
-        change_neighbors(x, y, b ? 1 : -1);
+        changeNeighbors(x, y, b ? 1 : -1);
     }
 
-    public void flip_tile(int x, int y) {
+    public void flipTile(int x, int y) {
         field[y][x] = !field[y][x];
     }
 
-    public void put_shape(int x, int y, ArrayList<Vec2> shape, Vec2 offset) {
+    public void putShape(int x, int y, ArrayList<Vec2> shape, Vec2 offset) {
         for (Vec2 p : shape) {
-            set_tile(x + p.x - offset.x, y + p.y - offset.y, true);
+            setTile(x + p.x - offset.x, y + p.y - offset.y, true);
         }
     }
 
@@ -81,7 +90,7 @@ public class Field {
         return new Shape(points);
     }
 
-    public boolean get_tile(int x, int y) {
+    public boolean getTile(int x, int y) {
         return field[y][x];
     }
 
@@ -89,29 +98,29 @@ public class Field {
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
                 if (field[i][j]) {
-                    flip_tile(j, i);
-                    change_neighbors(j, i, -1);
+                    flipTile(j, i);
+                    changeNeighbors(j, i, -1);
                 }
             }
         }
-        check_indexes.clear();
+        toUpdate.clear();
     }
 
-    private boolean in_bounds(int x, int y) {
+    private boolean withinBounds(int x, int y) {
         return y >= 0 && y < height && x >= 0 && x < width;
     }
 
-    private void change_neighbors(int x, int y, int change) {
-        check_indexes.add(new Vec2(x, y));
-        for (Vec2 coord : adjacent_indexes[y][x]) {
-            neighbour_count[coord.y][coord.x] += change;
-            check_indexes.add(coord);
+    private void changeNeighbors(int x, int y, int change) {
+        toUpdate.add(new Vec2(x, y));
+        for (Vec2 coord : adjacentPoints[y][x]) {
+            neighbourCount[coord.y][coord.x] += change;
+            toUpdate.add(coord);
         }
     }
 
-    private void createAdjacentIndexes() {
+    private void createAdjacentPoints() {
 
-        adjacent_indexes = new ArrayList[height][width];
+        adjacentPoints = new ArrayList[height][width];
         Vec2[] offsets = new Vec2[] {
                 new Vec2(-1, -1), new Vec2(0, -1), new Vec2(1, -1),
                 new Vec2(-1, 0),                   new Vec2(1, 0),
@@ -126,12 +135,12 @@ public class Field {
 
                 for (Vec2 offset : offsets) {
                     Vec2 neighbor = coord.offsetBy(offset);
-                    if (in_bounds(neighbor.x, neighbor.y)) {
+                    if (withinBounds(neighbor.x, neighbor.y)) {
                         temp.add(neighbor);
                     }
                 }
 
-                adjacent_indexes[i][j] = temp;
+                adjacentPoints[i][j] = temp;
             }
         }
     }

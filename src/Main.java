@@ -1,7 +1,8 @@
 /**
  * Created by Erik Mattfolk on 2017-04-27.
  *
- * Runs the program
+ * Main entry point of the program.
+ * Here the settings frame is first shown and then the game is started
  */
 public class Main {
     public static void main(String args[]) {
@@ -10,13 +11,14 @@ public class Main {
             try {
                 Thread.sleep(200);
             } catch (InterruptedException e) {
+                System.exit(0);
             }
         }
         settingsFrame.dispose();
-        Setting setting = settingsFrame.get_setting();
+        Setting setting = settingsFrame.getSetting();
         Game game = new Game(setting);
-        Frame frame = new Frame(game);
-        game.setFrame(frame);
+
+        new Frame(game);
         game.start();
     }
 }

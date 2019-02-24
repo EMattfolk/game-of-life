@@ -5,15 +5,17 @@ import java.awt.image.BufferedImage;
  * Created by Erik Mattfolk on 2017-04-27.
  * Refactored on 2019-02-19
  *
- * Renders the game on a BufferedImage
+ * The Renderer that translates code into actual game.
+ * Draws the field, markings and shapes
+ * It uses a buffered image to draw on for faster response times
  */
 public class Renderer {
 
-    private static final int GRID_WIDTH = 1;
+    private static final int GRID_WIDTH = 2;
     private static final Color BACKGROUND = Color.BLACK;
     private static final Color TILE = Color.LIGHT_GRAY;
     private static final Color OUTLINE = Color.DARK_GRAY;
-    private static final Color GRIDLINE = Color.DARK_GRAY.darker(); // DARKER hahahaha!!
+    private static final Color GRIDLINE = Color.DARK_GRAY.darker();
     private static final Color MARKING = new Color(0, 0, 255, 50);
 
     private int width, height, tileSize;
@@ -42,11 +44,11 @@ public class Renderer {
         g.setColor(GRIDLINE);
         for (int i = 1; i < width; i++) {
             int x = i * (tileSize + GRID_WIDTH) - GRID_WIDTH;
-            g.drawLine(x, 0, x, dimension.height);
+            g.fillRect(x, 0, GRID_WIDTH, dimension.height);
         }
         for (int i = 1; i < height; i++) {
             int y = i * (tileSize + GRID_WIDTH) - GRID_WIDTH;
-            g.drawLine(0, y, dimension.width, y);
+            g.fillRect(0, y, dimension.width, GRID_WIDTH);
         }
     }
 
@@ -56,7 +58,7 @@ public class Renderer {
             int y = i * (tileSize + GRID_WIDTH);
             for (int j = 0; j < height; j++) {
                 int x = j * (tileSize + GRID_WIDTH);
-                if (field.get_tile(j, i)) {
+                if (field.getTile(j, i)) {
                     g.fillRect(x, y, tileSize, tileSize);
                 }
             }

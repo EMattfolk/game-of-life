@@ -16,15 +16,21 @@ import java.awt.event.MouseEvent;
  * Tile "dies" if it has less than two neighbors or greater than three neighbors
  *
  * Controls:
- * Create life: Left click (hold and drag to create more)
- * Kill life: Right click (hold and drag to kill more)
- * Start/Pause simulation: Down arrow key
- * Increase/Decrease simulation speed: Right/Left arrow key
- * When the game is paused, Up arrow key updates the board once
- * Saving shapes: press 0-9 or a-z and drag mouse with right mouse button
- * Printing shapes: press 0-9 or a-z and click with left mouse button
- * Rotate shape: control key
- * Clear board: Space
+ * Switch mode:               Shift
+ * Start/Stop simulation:     Space
+ * Clear board:               C
+ *
+ * In Tilemode (Default)
+ * Create life:               Left click  (hold and drag to create more)
+ * Kill life:                 Right click (hold and drag to kill more)
+ * Change simulation speed:   Right/Left arrow key
+ * Simulate one generation:   Up arrow key
+ *
+ * In Shapemode
+ * Save shapes:               Mark area using Right mouse button
+ * Place shapes:              Left click
+ * Rotate shapes:             Up arrow key
+ * Delete shapes:             D
  *
  * Version history:
  * 1.0: It works
@@ -135,6 +141,10 @@ public class Game extends JComponent{
                         setMouse(shapeMouse);
                     }
                 }
+                else if (key == KeyEvent.VK_C) {
+                    field.reset();
+                    paused = true;
+                }
 
                 // Keybindings in tile mode
                 if (tileMode) {
@@ -148,10 +158,6 @@ public class Game extends JComponent{
                     }
                     else if (key == KeyEvent.VK_RIGHT) {
                         changeUPS(true);
-                    }
-                    else if (key == KeyEvent.VK_D) {
-                        field.reset();
-                        paused = true;
                     }
                 }
                 // Keybindings in shape mode
@@ -244,7 +250,7 @@ public class Game extends JComponent{
             public void mousePressed(MouseEvent e) {
 
                 if (e.getButton() == MouseEvent.BUTTON1) {
-                    field.put_shape(mouseHelper.getX(), mouseHelper.getY(), currentShape.getPoints(), currentShape.getMiddle());
+                    field.putShape(mouseHelper.getX(), mouseHelper.getY(), currentShape.getPoints(), currentShape.getMiddle());
                 }
                 else if (e.getButton() == MouseEvent.BUTTON3) {
                     mouseHelper.startMarking();
@@ -273,7 +279,7 @@ public class Game extends JComponent{
     }
 
     private void change_tile(int x, int y, boolean b) {
-        field.set_tile(x, y, b);
+        field.setTile(x, y, b);
     }
 
     private void changeUPS(boolean increase) {
