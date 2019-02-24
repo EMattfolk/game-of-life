@@ -6,11 +6,11 @@
  * Saving of cell configurations
  * Fast simulation up to 200 updates per second
 
-## Rules:
+## Rules
 * Tile is _**born**_ if it has **3** neighbors
 * Tile _**dies**_ if it has less than **2** neighbors or greater than **3** neighbors
 
-## Controls:
+## Controls
 |Universal              |Key    |
 |-----------------------|-------|
 | Switch mode           | Shift |

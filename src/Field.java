@@ -18,6 +18,7 @@ public class Field {
     private static final int DEATH_UPPER = 3;
 
     private int width, height;
+    private boolean updating;
     private boolean[][] field;
     private int[][] neighbourCount;
     private ArrayList<Vec2>[][] adjacentPoints;
@@ -36,6 +37,8 @@ public class Field {
     }
 
     public void update() {
+        updating = true;
+
         for (Vec2 coord : toUpdate) {
             int x = coord.x, y = coord.y;
             int neighbors = neighbourCount[y][x];
@@ -49,28 +52,31 @@ public class Field {
         }
         toUpdate.clear();
         for (Vec2 coord : increase) {
-            changeNeighbors(coord.x, coord.y, 1);
+            updateNeighbors(coord.x, coord.y, 1);
         }
         for (Vec2 coord : decrease) {
-            changeNeighbors(coord.x, coord.y, -1);
+            updateNeighbors(coord.x, coord.y, -1);
         }
         increase.clear();
         decrease.clear();
+
+        updating = false;
     }
 
     public void setTile(int x, int y, boolean b)
     {
-        if (!withinBounds(x, y) || field[y][x] == b) return;
+        if (updating || !withinBounds(x, y) || field[y][x] == b) return;
         field[y][x] = b;
-        changeNeighbors(x, y, b ? 1 : -1);
+        updateNeighbors(x, y, b ? 1 : -1);
     }
 
-    public void flipTile(int x, int y) {
+    private void flipTile(int x, int y) {
         field[y][x] = !field[y][x];
     }
 
-    public void putShape(int x, int y, ArrayList<Vec2> shape, Vec2 offset) {
-        for (Vec2 p : shape) {
+    public void putShape(int x, int y, Shape shape) {
+        Vec2 offset = shape.getMiddle();
+        for (Vec2 p : shape.getPoints()) {
             setTile(x + p.x - offset.x, y + p.y - offset.y, true);
         }
     }
@@ -99,7 +105,7 @@ public class Field {
             for (int j = 0; j < width; j++) {
                 if (field[i][j]) {
                     flipTile(j, i);
-                    changeNeighbors(j, i, -1);
+                    updateNeighbors(j, i, -1);
                 }
             }
         }
@@ -110,7 +116,7 @@ public class Field {
         return y >= 0 && y < height && x >= 0 && x < width;
     }
 
-    private void changeNeighbors(int x, int y, int change) {
+    private void updateNeighbors(int x, int y, int change) {
         toUpdate.add(new Vec2(x, y));
         for (Vec2 coord : adjacentPoints[y][x]) {
             neighbourCount[coord.y][coord.x] += change;

@@ -197,11 +197,11 @@ public class Game extends JComponent{
         removeMouseMotionListener(getMouseMotionListeners()[0]);
     }
 
-    private void setupMouseModes() {
+    private void setupMouseModes() { //TODO: move to different file
 
         tileMouse = new MouseAdapter() {
 
-            boolean left_down = false, right_down = false;
+            boolean leftDown = false, rightDown = false;
 
             public void mousePressed(MouseEvent e) {
 
@@ -209,36 +209,37 @@ public class Game extends JComponent{
                 int y = mouseHelper.getY();
 
                 if (e.getButton() == MouseEvent.BUTTON1) {
-                    left_down = true;
-                    change_tile(x, y, true);
+                    leftDown = true;
+                    field.setTile(x, y, true);
                 }
                 else if (e.getButton() == MouseEvent.BUTTON3) {
-                    right_down = true;
-                    change_tile(x, y, false);
+                    rightDown = true;
+                    field.setTile(x, y, false);
                 }
             }
 
             public void mouseDragged(MouseEvent e) {
 
                 mouseHelper.setMousePosition(e.getX(), e.getY());
+
                 int x = mouseHelper.getX();
                 int y = mouseHelper.getY();
 
-                if (left_down) {
-                    change_tile(x, y, true);
+                if (leftDown) {
+                    field.setTile(x, y, true);
                 }
-                else if (right_down) {
-                    change_tile(x, y, false);
+                else if (rightDown) {
+                    field.setTile(x, y, false);
                 }
             }
 
             public void mouseReleased(MouseEvent e) {
 
                 if (e.getButton() == MouseEvent.BUTTON1) {
-                    left_down = false;
+                    leftDown = false;
                 }
                 else if (e.getButton() == MouseEvent.BUTTON2) {
-                    right_down = false;
+                    rightDown = false;
                 }
             }
 
@@ -251,7 +252,7 @@ public class Game extends JComponent{
             public void mousePressed(MouseEvent e) {
 
                 if (e.getButton() == MouseEvent.BUTTON1) {
-                    field.putShape(mouseHelper.getX(), mouseHelper.getY(), currentShape.getPoints(), currentShape.getMiddle());
+                    field.putShape(mouseHelper.getX(), mouseHelper.getY(), currentShape);
                 }
                 else if (e.getButton() == MouseEvent.BUTTON3) {
                     mouseHelper.startMarking();
@@ -277,10 +278,6 @@ public class Game extends JComponent{
                 mouseHelper.setMousePosition(e.getX(), e.getY());
             }
         };
-    }
-
-    private void change_tile(int x, int y, boolean b) {
-        field.setTile(x, y, b);
     }
 
     private void changeUPS(boolean increase) {
