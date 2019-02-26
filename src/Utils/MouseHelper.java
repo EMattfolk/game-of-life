@@ -17,8 +17,8 @@ public class MouseHelper {
     private Vec2 markPos;
     private boolean marking;
 
-    public MouseHelper(int tileSize) {
-        this.tileSize = tileSize;
+    public MouseHelper(Setting setting) {
+        this.tileSize = setting.tileSize + setting.gridWidth;
         pos = new Vec2();
         markPos = new Vec2();
         marking = false;

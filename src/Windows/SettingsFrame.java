@@ -99,6 +99,6 @@ public class SettingsFrame extends JFrame {
     }
 
     public Setting getSetting() {
-        return new Setting(width, height, size);
+        return new Setting(width, height, size, 1);
     }
 }

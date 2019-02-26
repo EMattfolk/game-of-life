@@ -1,6 +1,6 @@
 package Game;
 
-import Utils.MouseHelper;
+import Utils.AbstractMouseMode;
 import Utils.Setting;
 import Windows.Frame;
 
@@ -9,7 +9,6 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 /**
  * Created by Erik Mattfolk on 2017-04-27.
@@ -46,9 +45,9 @@ import java.awt.event.MouseEvent;
  */
 
 public class Game extends JComponent{
-    private static final String TITLE_STRING = "Game.Game of Life - UPS: %d - %s";
+    private static final String TITLE_STRING = "Game of Life - UPS: %d - %s";
     private static final String TILE_MODE = "Tile mode";
-    private static final String SHAPE_MODE = "Game.Shape mode";
+    private static final String SHAPE_MODE = "Shape mode";
     private static final long MILLION = 1000000;
     private static final long BILLION = 1000000000;
     private static final long FPS = 10;
@@ -56,31 +55,27 @@ public class Game extends JComponent{
     private long frame_time, update_time, UPS;
     private boolean paused, tileMode;
     private Shape currentShape;
-    private Windows.Frame frame;
+    private Frame frame;
     private Field field;
     private Renderer renderer;
     private ShapeHandler shapeHandler;
-    private MouseHelper mouseHelper;
-    private MouseAdapter tileMouse, shapeMouse;
+    private AbstractMouseMode tileMouse, shapeMouse;
+    private KeyListener keyListener;
+    private Setting setting;
 
     public Game(Setting setting) {
-
-        int width = setting.width;
-        int height = setting.height;
-        int tile_size = setting.size;
+        this.setting = setting;
         UPS = 10;
         paused = true;
         tileMode = true;
         currentShape = Shape.EMPTY;
-        field = new Field(width, height);
-        renderer = new Renderer(width, height, tile_size);
+        field = new Field(setting.width, setting.height);
+        renderer = new Renderer(setting);
         shapeHandler = new ShapeHandler();
-        mouseHelper = renderer.getMousehelper();
-        setup_listeners();
+        setupListeners();
     }
 
     public void start() {
-
         frame.pack();
         update_time = BILLION / UPS;
         frame_time = 1000 / FPS;
@@ -122,17 +117,27 @@ public class Game extends JComponent{
     private void render() {
         renderer.clear();
         renderer.drawGridlines();
-        renderer.drawShapeOutline(currentShape, mouseHelper.getPos());
+        if (!tileMode) {
+            renderer.drawShapeOutline(currentShape, shapeMouse.getHelper().getPos());
+        }
         renderer.drawActiveTiles(field);
-        renderer.drawMarking(mouseHelper);
+        if (!tileMode) {
+            renderer.drawMarking(shapeMouse.getHelper());
+        }
         repaint();
     }
 
-    private void setup_listeners() {
+    private void setupListeners() {
         setFocusable(true);
         setupMouseModes();
         setMouse(tileMouse);
-        addKeyListener(new KeyListener() { //TODO: Move to another file
+        setUpKeyListener();
+        addKeyListener(keyListener);
+        requestFocus();
+    }
+
+    private void setUpKeyListener() {
+        keyListener = new KeyListener() {
 
             public void keyPressed(KeyEvent e) {
 
@@ -196,8 +201,7 @@ public class Game extends JComponent{
 
             public void keyReleased(KeyEvent e) {}
             public void keyTyped(KeyEvent e) {}
-        });
-        requestFocus();
+        };
     }
 
     private void setMouse(MouseAdapter mouse) {
@@ -212,70 +216,39 @@ public class Game extends JComponent{
 
     private void setupMouseModes() { //TODO: move to different file
 
-        tileMouse = new MouseAdapter() {
-
-            boolean leftDown = false, rightDown = false;
-
-            public void mousePressed(MouseEvent e) {
-
-                int x = mouseHelper.getX();
-                int y = mouseHelper.getY();
-
-                if (e.getButton() == MouseEvent.BUTTON1) {
-                    leftDown = true;
-                    field.setTile(x, y, true);
-                }
-                else if (e.getButton() == MouseEvent.BUTTON3) {
-                    rightDown = true;
-                    field.setTile(x, y, false);
+        tileMouse = new AbstractMouseMode(setting) {
+            @Override
+            public void onPress(int x, int y) {
+                if (leftPressed || rightPressed) {
+                    field.setTile(x, y, leftDown);
                 }
             }
 
-            public void mouseDragged(MouseEvent e) {
-
-                mouseHelper.setMousePosition(e.getX(), e.getY());
-
-                int x = mouseHelper.getX();
-                int y = mouseHelper.getY();
-
-                if (leftDown) {
-                    field.setTile(x, y, true);
-                }
-                else if (rightDown) {
-                    field.setTile(x, y, false);
+            @Override
+            public void onDrag(int x, int y) {
+                if (leftDown || rightDown) {
+                    field.setTile(x, y, leftDown);
                 }
             }
 
-            public void mouseReleased(MouseEvent e) {
-
-                if (e.getButton() == MouseEvent.BUTTON1) {
-                    leftDown = false;
-                }
-                else if (e.getButton() == MouseEvent.BUTTON2) {
-                    rightDown = false;
-                }
-            }
-
-            public void mouseMoved(MouseEvent e) {
-                mouseHelper.setMousePosition(e.getX(), e.getY());
-            }
+            @Override
+            public void onRelease(int x, int y) {}
         };
-        shapeMouse = new MouseAdapter() {
-
-            public void mousePressed(MouseEvent e) {
-
-                if (e.getButton() == MouseEvent.BUTTON1) {
-                    field.putShape(mouseHelper.getX(), mouseHelper.getY(), currentShape);
+        shapeMouse = new AbstractMouseMode(setting) {
+            @Override
+            public void onPress(int x, int y) {
+                if (leftPressed) {
+                    field.putShape(x, y, currentShape);
                 }
-                else if (e.getButton() == MouseEvent.BUTTON3) {
+                else if (rightPressed) {
                     mouseHelper.startMarking();
                     currentShape = Shape.EMPTY;
                 }
             }
 
-            public void mouseReleased(MouseEvent e) {
-
-                if (e.getButton() == MouseEvent.BUTTON3) {
+            @Override
+            public void onRelease(int x, int y) {
+                if (rightReleased) {
                     mouseHelper.endMarking();
                     shapeHandler.add_shape(field.getShape(mouseHelper.getMarking()));
                     shapeHandler.cycleToEnd();
@@ -283,13 +256,8 @@ public class Game extends JComponent{
                 }
             }
 
-            public void mouseDragged(MouseEvent e) {
-                mouseHelper.setMousePosition(e.getX(), e.getY());
-            }
-
-            public void mouseMoved(MouseEvent e) {
-                mouseHelper.setMousePosition(e.getX(), e.getY());
-            }
+            @Override
+            public void onDrag(int x, int y) {}
         };
     }
 

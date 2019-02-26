@@ -1,6 +1,7 @@
 package Game;
 
 import Utils.MouseHelper;
+import Utils.Setting;
 import Utils.Vec2;
 
 import java.awt.*;
@@ -16,25 +17,25 @@ import java.awt.image.BufferedImage;
  */
 public class Renderer {
 
-    private static final int GRID_WIDTH = 2;
     private static final Color BACKGROUND = Color.BLACK;
     private static final Color TILE = Color.LIGHT_GRAY;
     private static final Color OUTLINE = Color.DARK_GRAY;
     private static final Color GRIDLINE = Color.DARK_GRAY.darker();
     private static final Color MARKING = new Color(0, 0, 255, 50);
 
-    private int width, height, tileSize;
+    private int width, height, tileSize, gridWidth;
     private Dimension dimension;
     private BufferedImage image;
     private Graphics g;
 
-    public Renderer(int width, int height, int tileSize) {
-        this.width = width;
-        this.height = height;
-        this.tileSize = tileSize;
+    public Renderer(Setting setting) {
+        this.width = setting.width;
+        this.height = setting.height;
+        this.tileSize = setting.tileSize;
+        this.gridWidth = setting.gridWidth;
         dimension = new Dimension(
-                width * (tileSize + GRID_WIDTH) - GRID_WIDTH,
-                height * (tileSize + GRID_WIDTH) - GRID_WIDTH
+                width * (tileSize + gridWidth) - gridWidth,
+                height * (tileSize + gridWidth) - gridWidth
         );
         image = new BufferedImage(dimension.width, dimension.height, BufferedImage.TYPE_INT_RGB);
         g = image.getGraphics();
@@ -48,21 +49,21 @@ public class Renderer {
     public void drawGridlines() {
         g.setColor(GRIDLINE);
         for (int i = 1; i < width; i++) {
-            int x = i * (tileSize + GRID_WIDTH) - GRID_WIDTH;
-            g.fillRect(x, 0, GRID_WIDTH, dimension.height);
+            int x = i * (tileSize + gridWidth) - gridWidth;
+            g.fillRect(x, 0, gridWidth, dimension.height);
         }
         for (int i = 1; i < height; i++) {
-            int y = i * (tileSize + GRID_WIDTH) - GRID_WIDTH;
-            g.fillRect(0, y, dimension.width, GRID_WIDTH);
+            int y = i * (tileSize + gridWidth) - gridWidth;
+            g.fillRect(0, y, dimension.width, gridWidth);
         }
     }
 
     public void drawActiveTiles(Field field) {
         g.setColor(TILE);
         for (int i = 0; i < height; i++) {
-            int y = i * (tileSize + GRID_WIDTH);
+            int y = i * (tileSize + gridWidth);
             for (int j = 0; j < height; j++) {
-                int x = j * (tileSize + GRID_WIDTH);
+                int x = j * (tileSize + gridWidth);
                 if (field.getTile(j, i)) {
                     g.fillRect(x, y, tileSize, tileSize);
                 }
@@ -75,10 +76,10 @@ public class Renderer {
         Rectangle marking = helper.getMarking();
         g.setColor(MARKING);
         g.fillRect(
-            marking.x * (tileSize + GRID_WIDTH),
-            marking.y * (tileSize + GRID_WIDTH),
-            marking.width * (tileSize + GRID_WIDTH),
-            marking.height * (tileSize + GRID_WIDTH)
+            marking.x * (tileSize + gridWidth),
+            marking.y * (tileSize + gridWidth),
+            marking.width * (tileSize + gridWidth),
+            marking.height * (tileSize + gridWidth)
         );
     }
 
@@ -88,8 +89,8 @@ public class Renderer {
         pos.translate(-middle.x, -middle.y);
         for (Vec2 coord : shape.getPoints()) {
             g.fillRect(
-                (tileSize + GRID_WIDTH) * (coord.x + pos.x),
-                (tileSize + GRID_WIDTH) * (coord.y + pos.y),
+                (tileSize + gridWidth) * (coord.x + pos.x),
+                (tileSize + gridWidth) * (coord.y + pos.y),
                 tileSize,
                 tileSize
             );
@@ -102,9 +103,5 @@ public class Renderer {
 
     public BufferedImage getImage() {
         return image;
-    }
-
-    public MouseHelper getMousehelper() {
-        return new MouseHelper(tileSize + GRID_WIDTH);
     }
 }

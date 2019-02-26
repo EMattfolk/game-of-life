@@ -8,11 +8,12 @@ package Utils;
  */
 public class Setting {
 
-    public final int width, height, size;
+    public final int width, height, tileSize, gridWidth;
 
-    public Setting(int width, int height, int size) {
+    public Setting(int width, int height, int tileSize, int gridWidth) {
         this.width = width;
         this.height = height;
-        this.size = size;
+        this.tileSize = tileSize;
+        this.gridWidth = gridWidth;
     }
 }
