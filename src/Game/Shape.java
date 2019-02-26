@@ -1,3 +1,7 @@
+package Game;
+
+import Utils.Vec2;
+
 import java.util.ArrayList;
 
 /**

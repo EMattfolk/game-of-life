@@ -1,3 +1,8 @@
+package Game;
+
+import Utils.MouseHelper;
+import Utils.Vec2;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 

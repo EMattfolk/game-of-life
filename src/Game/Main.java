@@ -1,3 +1,9 @@
+package Game;
+
+import Utils.Setting;
+import Windows.Frame;
+import Windows.SettingsFrame;
+
 /**
  * Created by Erik Mattfolk on 2017-04-27.
  *

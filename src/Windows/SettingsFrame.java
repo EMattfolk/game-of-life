@@ -1,3 +1,6 @@
+package Windows;
+
+import Utils.Setting;
 import javax.swing.*;
 import java.awt.*;
 

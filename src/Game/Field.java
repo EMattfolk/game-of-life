@@ -1,3 +1,7 @@
+package Game;
+
+import Utils.Vec2;
+
 import java.awt.*;
 import java.util.ArrayList;
 
@@ -12,7 +16,7 @@ import java.util.ArrayList;
  */
 public class Field {
 
-    // Game rules
+    // Game.Game rules
     private static final int LIFE_COUNT = 3;
     private static final int DEATH_LOWER = 2;
     private static final int DEATH_UPPER = 3;

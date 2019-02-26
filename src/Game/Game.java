@@ -1,3 +1,9 @@
+package Game;
+
+import Utils.MouseHelper;
+import Utils.Setting;
+import Windows.Frame;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -40,17 +46,17 @@ import java.awt.event.MouseEvent;
  */
 
 public class Game extends JComponent{
-    private static final String TITLE_STRING = "Game of Life - UPS: %d - %s";
+    private static final String TITLE_STRING = "Game.Game of Life - UPS: %d - %s";
     private static final String TILE_MODE = "Tile mode";
-    private static final String SHAPE_MODE = "Shape mode";
+    private static final String SHAPE_MODE = "Game.Shape mode";
     private static final long MILLION = 1000000;
     private static final long BILLION = 1000000000;
-    private static final long FPS = 60;
+    private static final long FPS = 10;
 
     private long frame_time, update_time, UPS;
     private boolean paused, tileMode;
     private Shape currentShape;
-    private Frame frame;
+    private Windows.Frame frame;
     private Field field;
     private Renderer renderer;
     private ShapeHandler shapeHandler;

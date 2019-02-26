@@ -1,3 +1,7 @@
+package Windows;
+
+import Game.Game;
+
 import javax.swing.*;
 import java.awt.*;
 

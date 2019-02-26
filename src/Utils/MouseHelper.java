@@ -1,3 +1,5 @@
+package Utils;
+
 import java.awt.*;
 
 /**
@@ -6,7 +8,7 @@ import java.awt.*;
  *
  * Keeps track of mouse movements, positions and updates
  * This class is meant to translate what you see on the screen to what is usable by the program.
- * Therefore it is closely related to the Renderer
+ * Therefore it is closely related to the Game.Renderer
  */
 public class MouseHelper {
 

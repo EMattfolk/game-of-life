@@ -1,5 +1,5 @@
- # Game of life
- This is a recreation of Conway's Game of Life made in Java.
+ # Game.Game of life
+ This is a recreation of Conway's Game.Game of Life made in Java.
 
  ## Features
  * Scalable field
