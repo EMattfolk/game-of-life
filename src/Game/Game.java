@@ -50,7 +50,7 @@ public class Game extends JComponent{
     private static final String SHAPE_MODE = "Shape mode";
     private static final long MILLION = 1000000;
     private static final long BILLION = 1000000000;
-    private static final long FPS = 10;
+    private static final long FPS = 60;
 
     private long frame_time, update_time, UPS;
     private boolean paused, tileMode;
