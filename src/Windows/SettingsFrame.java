@@ -57,10 +57,10 @@ public class SettingsFrame extends JFrame {
 
     private void setupInputs() {
         triples = new InputTriple[] {
-                new InputTriple(" Width", DEFAULT_WIDTH, LABEL_SIZE),
-                new InputTriple(" Height", DEFAULT_HEIGHT, LABEL_SIZE),
-                new InputTriple(" Tile Size", DEFAULT_TILE_SIZE, LABEL_SIZE),
-                new InputTriple(" Grid Width", DEFAULT_GRID_WIDTH, LABEL_SIZE)
+                new InputTriple(" Width", DEFAULT_WIDTH, LABEL_SIZE, 1),
+                new InputTriple(" Height", DEFAULT_HEIGHT, LABEL_SIZE, 1),
+                new InputTriple(" Tile Size", DEFAULT_TILE_SIZE, LABEL_SIZE, 1),
+                new InputTriple(" Grid Width", DEFAULT_GRID_WIDTH, LABEL_SIZE, 0)
         };
 
         left.add(triples[0].label, BorderLayout.NORTH);
@@ -81,7 +81,7 @@ public class SettingsFrame extends JFrame {
             for (int i = 0; i < triples.length; i++) {
                 try {
                     triples[i].extractValue();
-                    if (triples[i].value < 1) {
+                    if (!triples[i].hasValidValue()) {
                         throw new NumberFormatException();
                     }
                 } catch (NumberFormatException ex) {

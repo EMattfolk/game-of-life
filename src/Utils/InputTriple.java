@@ -12,12 +12,13 @@ import java.awt.*;
 public class InputTriple {
     public final JLabel label;
     public final JTextField textField;
-    public int value;
+    public int value, minValue;
 
-    public InputTriple(String labelText, String defaultValue, Dimension preferredSize) {
+    public InputTriple(String labelText, String defaultValue, Dimension preferredSize, int minValue) {
         label = new JLabel(labelText);
         textField = new JTextField(defaultValue);
         value = 0;
+        this.minValue = minValue;
 
         label.setPreferredSize(preferredSize);
         textField.setPreferredSize(preferredSize);
@@ -25,5 +26,9 @@ public class InputTriple {
 
     public void extractValue() {
         value = Integer.parseInt(textField.getText());
+    }
+
+    public boolean hasValidValue() {
+        return value >= minValue;
     }
 }
