@@ -45,14 +45,19 @@ import java.awt.event.MouseAdapter;
  */
 
 public class Game extends JComponent{
-    private static final String TITLE_STRING = "Game of Life - UPS: %d - %s";
+    private static final String TITLE_STRING = "%s - %d Updates / sec - %s";
     private static final String TILE_MODE = "Tile mode";
     private static final String SHAPE_MODE = "Shape mode";
+    private static final String PAUSED = "Paused";
+    private static final String RUNNING = "Running";
     private static final long MILLION = 1000000;
     private static final long BILLION = 1000000000;
-    private static final long FPS = 60;
+    private static final long FPS = 30;
+    public static final int UPS_SOFT_CAP = 100;
+    public static final int UPS_HARD_CAP = 1000;
 
-    private long frame_time, update_time, UPS;
+    private long updateTime;
+    private long ups;
     private boolean paused, tileMode;
     private Shape currentShape;
     private Frame frame;
@@ -65,7 +70,7 @@ public class Game extends JComponent{
 
     public Game(Setting setting) {
         this.setting = setting;
-        UPS = 10;
+        ups = 10;
         paused = true;
         tileMode = true;
         currentShape = Shape.EMPTY;
@@ -77,16 +82,16 @@ public class Game extends JComponent{
 
     public void start() {
         frame.pack();
-        update_time = BILLION / UPS;
-        frame_time = 1000 / FPS;
-        long start_time, end_time, sleep_time, last_time = System.nanoTime();
+        updateTime = BILLION / ups;
+        long frame_time = 1000 / FPS;
+        long frameStart, frameEnd, sleepTime, lastUpdate = System.nanoTime();
         boolean running = true;
 
         while (running) {
-            start_time = System.nanoTime();
+            frameStart = System.nanoTime();
 
-            if (last_time + update_time < start_time) {
-                last_time += update_time;
+            while (lastUpdate + updateTime < frameStart) {
+                lastUpdate += updateTime;
                 if (!paused) {
                     gameUpdate();
                 }
@@ -94,12 +99,13 @@ public class Game extends JComponent{
 
             render();
 
-            end_time = System.nanoTime();
+            frameEnd = System.nanoTime();
 
-            sleep_time = (int) (frame_time - (end_time - start_time) / MILLION);
+            sleepTime = (int) (frame_time - (frameEnd - frameStart) / MILLION);
 
             try {
-                Thread.sleep(sleep_time);
+                Thread.sleep(sleepTime);
+                System.out.println(sleepTime);
             }
             catch (InterruptedException e) {
                 running = false;
@@ -146,6 +152,7 @@ public class Game extends JComponent{
                 // Global keys. Used to start/stop simulation and change between modes
                 if (key == KeyEvent.VK_SPACE) {
                     paused = !paused;
+                    updateFrameTitle();
                 }
                 else if (key == KeyEvent.VK_SHIFT) {
                     tileMode = !tileMode;
@@ -163,6 +170,7 @@ public class Game extends JComponent{
                 else if (key == KeyEvent.VK_C) {
                     field.reset();
                     paused = true;
+                    updateFrameTitle();
                 }
 
                 // Keybindings in tile mode
@@ -214,19 +222,19 @@ public class Game extends JComponent{
         removeMouseMotionListener(getMouseMotionListeners()[0]);
     }
 
-    private void setupMouseModes() { //TODO: move to different file
+    private void setupMouseModes() {
 
         tileMouse = new AbstractMouseMode(setting) {
             @Override
             public void onPress(int x, int y) {
-                if (leftPressed || rightPressed) {
+                if (canPlaceTile() && (leftPressed || rightPressed)) {
                     field.setTile(x, y, leftDown);
                 }
             }
 
             @Override
             public void onDrag(int x, int y) {
-                if (leftDown || rightDown) {
+                if (canPlaceTile() && (leftDown || rightDown)) {
                     field.setTile(x, y, leftDown);
                 }
             }
@@ -237,7 +245,7 @@ public class Game extends JComponent{
         shapeMouse = new AbstractMouseMode(setting) {
             @Override
             public void onPress(int x, int y) {
-                if (leftPressed) {
+                if (canPlaceTile() && leftPressed) {
                     field.putShape(x, y, currentShape);
                 }
                 else if (rightPressed) {
@@ -261,21 +269,23 @@ public class Game extends JComponent{
         };
     }
 
+    private boolean canPlaceTile() {
+        return ups < UPS_SOFT_CAP || paused;
+    }
     private void changeUPS(boolean increase) {
-
-        if (increase && UPS < 60) {
-            UPS++;
-        }
-        else if (!increase && UPS > 1) {
-            UPS--;
-        }
-
-        update_time = BILLION / UPS;
+        int change = increase ? 1 : -1;
+        ups = Math.max(1, Math.min(ups + change, UPS_HARD_CAP)); // Clamp ups between 1 and UPS_HARD_CAP
+        updateTime = BILLION / ups;
         updateFrameTitle();
     }
 
     private void updateFrameTitle() {
-        frame.setTitle(String.format(TITLE_STRING, UPS, tileMode ? TILE_MODE : SHAPE_MODE));
+        frame.setTitle(
+            String.format(TITLE_STRING,
+                paused ? PAUSED : RUNNING,
+                    ups,
+                tileMode ? TILE_MODE : SHAPE_MODE)
+        );
     }
 
     public void paint(Graphics g) {
