@@ -24,6 +24,7 @@ import java.awt.event.MouseAdapter;
  * Switch mode:               Shift
  * Start/Stop simulation:     Space
  * Clear board:               C
+ * Fast Mode:                 F
  *
  * In Tilemode (Default)
  * Create life:               Left click  (hold and drag to create more)
@@ -45,11 +46,12 @@ import java.awt.event.MouseAdapter;
  */
 
 public class Game extends JComponent{
-    private static final String TITLE_STRING = "%s - %d Updates / sec - %s";
+    private static final String TITLE_STRING = "%s - %s Updates / sec - %s";
     private static final String TILE_MODE = "Tile mode";
     private static final String SHAPE_MODE = "Shape mode";
     private static final String PAUSED = "Paused";
     private static final String RUNNING = "Running";
+    private static final String MANY = "Many";
     private static final long MILLION = 1000000;
     private static final long BILLION = 1000000000;
     private static final long FPS = 30;
@@ -58,7 +60,7 @@ public class Game extends JComponent{
 
     private long updateTime;
     private long ups;
-    private boolean paused, tileMode;
+    private boolean paused, tileMode, fastMode;
     private Shape currentShape;
     private Frame frame;
     private Field field;
@@ -73,6 +75,7 @@ public class Game extends JComponent{
         ups = 10;
         paused = true;
         tileMode = true;
+        fastMode = false;
         currentShape = Shape.EMPTY;
         field = new Field(setting.width, setting.height);
         renderer = new Renderer(setting);
@@ -85,16 +88,23 @@ public class Game extends JComponent{
         updateTime = BILLION / ups;
         long frame_time = 1000 / FPS;
         long frameStart, frameEnd, sleepTime, lastUpdate = System.nanoTime();
+        int updatesThisFrame;
         boolean running = true;
 
         while (running) {
             frameStart = System.nanoTime();
+            updatesThisFrame = 0;
 
             while (lastUpdate + updateTime < frameStart) {
                 lastUpdate += updateTime;
                 if (!paused) {
                     gameUpdate();
+                    updatesThisFrame++;
                 }
+            }
+            while (!paused && fastMode && frame_time - (System.nanoTime() - frameStart) / MILLION > 0) {
+                gameUpdate();
+                updatesThisFrame++;
             }
 
             render();
@@ -103,15 +113,16 @@ public class Game extends JComponent{
 
             sleepTime = (int) (frame_time - (frameEnd - frameStart) / MILLION);
 
+            if (sleepTime < 0)
+                continue;
+
+            System.out.println(updatesThisFrame);
+
             try {
                 Thread.sleep(sleepTime);
-                System.out.println(sleepTime);
             }
             catch (InterruptedException e) {
                 running = false;
-            }
-            catch (IllegalArgumentException e) {
-                System.out.println("Negative time value");
             }
         }
     }
@@ -170,6 +181,10 @@ public class Game extends JComponent{
                 else if (key == KeyEvent.VK_C) {
                     field.reset();
                     paused = true;
+                    updateFrameTitle();
+                }
+                else if (key == KeyEvent.VK_F) {
+                    fastMode = !fastMode;
                     updateFrameTitle();
                 }
 
@@ -270,7 +285,7 @@ public class Game extends JComponent{
     }
 
     private boolean canPlaceTile() {
-        return ups < UPS_SOFT_CAP || paused;
+        return (ups < UPS_SOFT_CAP && !fastMode) || paused;
     }
     private void changeUPS(boolean increase) {
         int change = increase ? 1 : -1;
@@ -282,9 +297,9 @@ public class Game extends JComponent{
     private void updateFrameTitle() {
         frame.setTitle(
             String.format(TITLE_STRING,
-                paused ? PAUSED : RUNNING,
-                    ups,
-                tileMode ? TILE_MODE : SHAPE_MODE)
+                    paused ? PAUSED : RUNNING,
+                    fastMode ? MANY : String.valueOf(ups),
+                    tileMode ? TILE_MODE : SHAPE_MODE)
         );
     }
 
