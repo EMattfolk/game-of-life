@@ -55,7 +55,7 @@ public class Game extends JComponent{
     private static final long MILLION = 1000000;
     private static final long BILLION = 1000000000;
     private static final long FPS = 30;
-    public static final int UPS_SOFT_CAP = 100;
+    public static final int UPS_SOFT_CAP = 0; // Increase this to allow placing while simulating
     public static final int UPS_HARD_CAP = 1000;
 
     private long updateTime;

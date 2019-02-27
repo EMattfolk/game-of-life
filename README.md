@@ -16,6 +16,7 @@
 | Switch mode           | Shift |
 | Start/Stop simulation | Space |
 | Clear board           | C     |
+| Enable fast mode      | F     |
 
 |Tilemode                 |Key               |
 |-------------------------|------------------|
