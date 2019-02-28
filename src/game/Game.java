@@ -1,8 +1,8 @@
-package Game;
+package game;
 
-import Utils.AbstractMouseMode;
-import Utils.Setting;
-import Windows.Frame;
+import utils.AbstractMouseMode;
+import utils.Setting;
+import windows.GameFrame;
 
 import javax.swing.*;
 import java.awt.*;
@@ -62,7 +62,7 @@ public class Game extends JComponent{
     private long ups;
     private boolean paused, tileMode, fastMode;
     private Shape currentShape;
-    private Frame frame;
+    private GameFrame gameFrame;
     private Field field;
     private Renderer renderer;
     private ShapeHandler shapeHandler;
@@ -84,16 +84,15 @@ public class Game extends JComponent{
     }
 
     public void start() {
-        frame.pack();
+        gameFrame.pack();
         updateTime = BILLION / ups;
-        long frame_time = 1000 / FPS;
-        long frameStart, frameEnd, sleepTime, lastUpdate = System.nanoTime();
-        int updatesThisFrame;
+        long frameTime = 1000 / FPS;
+        long lastUpdate = System.nanoTime();
         boolean running = true;
 
         while (running) {
-            frameStart = System.nanoTime();
-            updatesThisFrame = 0;
+            long frameStart = System.nanoTime();
+            int updatesThisFrame = 0;
 
             while (lastUpdate + updateTime < frameStart) {
                 lastUpdate += updateTime;
@@ -102,16 +101,16 @@ public class Game extends JComponent{
                     updatesThisFrame++;
                 }
             }
-            while (!paused && fastMode && frame_time - (System.nanoTime() - frameStart) / MILLION > 0) {
+            while (!paused && fastMode && frameTime - (System.nanoTime() - frameStart) / MILLION > 0) {
                 gameUpdate();
                 updatesThisFrame++;
             }
 
             render();
 
-            frameEnd = System.nanoTime();
+            long frameEnd = System.nanoTime();
 
-            sleepTime = (int) (frame_time - (frameEnd - frameStart) / MILLION);
+            long sleepTime = (int) (frameTime - (frameEnd - frameStart) / MILLION);
 
             if (sleepTime < 0)
                 continue;
@@ -121,7 +120,7 @@ public class Game extends JComponent{
             try {
                 Thread.sleep(sleepTime);
             }
-            catch (InterruptedException e) {
+            catch (InterruptedException ignored) {
                 running = false;
             }
         }
@@ -135,11 +134,11 @@ public class Game extends JComponent{
         renderer.clear();
         renderer.drawGridlines();
         if (!tileMode) {
-            renderer.drawShapeOutline(currentShape, shapeMouse.getHelper().getPos());
+            renderer.drawShapeOutline(currentShape, shapeMouse.getMouseHelper().getPos());
         }
         renderer.drawActiveTiles(field);
         if (!tileMode) {
-            renderer.drawMarking(shapeMouse.getHelper());
+            renderer.drawMarking(shapeMouse.getMouseHelper());
         }
         repaint();
     }
@@ -273,7 +272,7 @@ public class Game extends JComponent{
             public void onRelease(int x, int y) {
                 if (rightReleased) {
                     mouseHelper.endMarking();
-                    shapeHandler.add_shape(field.getShape(mouseHelper.getMarking()));
+                    shapeHandler.addShape(field.getShape(mouseHelper.getMarking()));
                     shapeHandler.cycleToEnd();
                     currentShape = shapeHandler.getCurrentShape();
                 }
@@ -295,7 +294,7 @@ public class Game extends JComponent{
     }
 
     private void updateFrameTitle() {
-        frame.setTitle(
+        gameFrame.setTitle(
             String.format(TITLE_STRING,
                     paused ? PAUSED : RUNNING,
                     fastMode ? MANY : String.valueOf(ups),
@@ -311,8 +310,8 @@ public class Game extends JComponent{
         return renderer.getDimension();
     }
 
-    public void setFrame(Frame frame) {
-        this.frame = frame;
+    public void setGameFrame(GameFrame gameFrame) {
+        this.gameFrame = gameFrame;
         updateFrameTitle();
     }
 }

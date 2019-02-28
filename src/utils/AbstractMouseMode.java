@@ -1,8 +1,14 @@
-package Utils;
+package utils;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+/**
+ * Created by Erik Mattfolk on 2019-02-26
+ *
+ * This is a wrapper class for MouseAdapter.
+ * It simplifies making mouse handlers which interact with the game.
+ */
 public abstract class AbstractMouseMode extends MouseAdapter {
 
     protected MouseHelper mouseHelper;
@@ -13,7 +19,7 @@ public abstract class AbstractMouseMode extends MouseAdapter {
     protected boolean leftReleased;
     protected boolean rightReleased;
 
-    public AbstractMouseMode (Setting setting) {
+    protected AbstractMouseMode(Setting setting) {
         mouseHelper = new MouseHelper(setting);
         leftDown = false;
         rightDown = false;
@@ -64,7 +70,7 @@ public abstract class AbstractMouseMode extends MouseAdapter {
     abstract public void onRelease(int x, int y);
     abstract public void onDrag(int x, int y);
 
-    public MouseHelper getHelper() {
+    public MouseHelper getMouseHelper() {
         return mouseHelper;
     }
 }

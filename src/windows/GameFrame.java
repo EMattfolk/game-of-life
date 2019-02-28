@@ -1,6 +1,6 @@
-package Windows;
+package windows;
 
-import Game.Game;
+import game.Game;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,9 +11,9 @@ import java.awt.*;
  * The JFrame on which the game is displayed
  * This class is a JFrame but with some altered settings
  */
-public class Frame extends JFrame {
-    public Frame(Game game) {
-        game.setFrame(this);
+public class GameFrame extends JFrame {
+    public GameFrame(Game game) {
+        game.setGameFrame(this);
         setLayout(new BorderLayout());
         add(game, BorderLayout.CENTER);
         setBounds(100, 100, 0, 0);

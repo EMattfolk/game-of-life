@@ -1,8 +1,8 @@
-package Game;
+package game;
 
-import Utils.Setting;
-import Windows.Frame;
-import Windows.SettingsFrame;
+import utils.Setting;
+import windows.GameFrame;
+import windows.SettingsFrame;
 
 /**
  * Created by Erik Mattfolk on 2017-04-27.
@@ -10,13 +10,18 @@ import Windows.SettingsFrame;
  * Main entry point of the program.
  * Here the settings frame is first shown and then the game is started
  */
-public class Main {
-    public static void main(String args[]) {
+public final class Main {
+
+    public static final int WAIT_TIME = 200;
+
+    private Main() {}
+
+    public static void main(String[] args) {
         SettingsFrame settingsFrame = new SettingsFrame();
         while (!settingsFrame.isDone()) {
             try {
-                Thread.sleep(200);
-            } catch (InterruptedException e) {
+                Thread.sleep(WAIT_TIME);
+            } catch (InterruptedException ignored) {
                 System.exit(0);
             }
         }
@@ -24,7 +29,7 @@ public class Main {
         Setting setting = settingsFrame.getSetting();
         Game game = new Game(setting);
 
-        new Frame(game);
+        new GameFrame(game);
         game.start();
     }
 }

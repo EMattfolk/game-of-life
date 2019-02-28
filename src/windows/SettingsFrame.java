@@ -1,7 +1,7 @@
-package Windows;
+package windows;
 
-import Utils.Setting;
-import Utils.InputTriple;
+import utils.Setting;
+import utils.InputTriple;
 import javax.swing.*;
 import java.awt.*;
 
@@ -78,14 +78,14 @@ public class SettingsFrame extends JFrame {
         JButton start = new JButton("Start");
         start.addActionListener(e -> {
             boolean hasAllInputs = true;
-            for (int i = 0; i < triples.length; i++) {
+            for (InputTriple triple : triples) {
                 try {
-                    triples[i].extractValue();
-                    if (!triples[i].hasValidValue()) {
+                    triple.extractValue();
+                    if (!triple.hasValidValue()) {
                         throw new NumberFormatException();
                     }
                 } catch (NumberFormatException ex) {
-                    triples[i].textField.setText("error");
+                    triple.textField.setText("error");
                     hasAllInputs = false;
                 }
             }

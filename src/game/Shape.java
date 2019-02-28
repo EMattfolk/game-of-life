@@ -1,8 +1,9 @@
-package Game;
+package game;
 
-import Utils.Vec2;
+import utils.Vec2;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Erik Mattfolk on 2019-02-13.
@@ -51,7 +52,7 @@ public class Shape {
         return new Shape(rotated);
     }
 
-    public ArrayList<Vec2> getPoints() {
+    public List<Vec2> getPoints() {
         return points;
     }
 

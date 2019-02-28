@@ -1,9 +1,10 @@
-package Game;
+package game;
 
-import Utils.Vec2;
+import utils.Vec2;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Erik Mattfolk on 2017-04-27.
@@ -26,8 +27,8 @@ public class Field {
     private boolean[][] field;
     private int[][] neighbourCount;
     private ArrayList<Vec2>[][] adjacentPoints;
-    private ArrayList<Vec2> decrease, increase;
-    private ArrayList<Vec2> toUpdate;
+    private List<Vec2> decrease, increase;
+    private List<Vec2> toUpdate;
 
     public Field(int width, int height) {
         this.width = width;

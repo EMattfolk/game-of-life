@@ -1,4 +1,4 @@
-package Game;
+package game;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -23,7 +23,7 @@ import java.util.ArrayList;
 public class ShapeHandler {
 
     public static final String SAVE_PATH = "shapes.json";
-    private static final Type shapesType = new TypeToken<ArrayList<Shape>>() {}.getType();
+    private static final Type SHAPES_TYPE = new TypeToken<ArrayList<Shape>>() {}.getType();
 
     private int currentShape;
     private ArrayList<Shape> shapes;
@@ -31,43 +31,43 @@ public class ShapeHandler {
 
     public ShapeHandler() {
         currentShape = 0;
-        shapes = new ArrayList();
+        shapes = new ArrayList<>();
         gson = new Gson();
-        String data = read_file();
-        extract_data(data);
+        String data = readFile();
+        extractData(data);
     }
 
     public Shape getCurrentShape() {
-        if (shapes.size() == 0)
+        if (shapes.isEmpty())
             return Shape.EMPTY;
         else
             return shapes.get(currentShape);
     }
 
     public void deleteCurrentShape() {
-        if (shapes.size() == 0) return;
+        if (shapes.isEmpty()) return;
         shapes.remove(currentShape);
         save();
-        if (shapes.size() == 0) return;
+        if (shapes.isEmpty()) return;
         currentShape %= shapes.size();
     }
 
     public void cycleForward() {
-        if (shapes.size() == 0) return;
+        if (shapes.isEmpty()) return;
         currentShape = (currentShape + 1) % shapes.size();
     }
 
     public void cycleBackward() {
-        if (shapes.size() == 0) return;
+        if (shapes.isEmpty()) return;
         currentShape = Math.floorMod(currentShape - 1, shapes.size());
     }
 
     public void cycleToEnd() {
-        if (shapes.size() == 0) return;
+        if (shapes.isEmpty()) return;
         currentShape = shapes.size() - 1;
     }
 
-    private String read_file() {
+    private String readFile() {
         File file = new File(SAVE_PATH);
         String text = "";
 
@@ -88,12 +88,12 @@ public class ShapeHandler {
         return text;
     }
 
-    private void extract_data(String data) {
-        if (data.equals("")) return;
-        shapes = gson.fromJson(data, shapesType);
+    private void extractData(String data) {
+        if (data.isEmpty()) return;
+        shapes = gson.fromJson(data, SHAPES_TYPE);
     }
 
-    public void add_shape(Shape shape) {
+    public void addShape(Shape shape) {
         if (!shape.getPoints().isEmpty()) {
             shapes.add(shape);
             save();
@@ -105,16 +105,16 @@ public class ShapeHandler {
         if (!file.isFile()) {
             try {
                 file.createNewFile();
-            } catch (IOException e) {
+            } catch (IOException ignored) {
                 System.out.println("Failed to create file");
             }
         }
 
-        String text = gson.toJson(shapes, shapesType);
+        String text = gson.toJson(shapes, SHAPES_TYPE);
 
         try {
             Files.write(file.toPath(), text.getBytes());
-        } catch (IOException e) {
+        } catch (IOException ignored) {
             System.out.println("Failed to save");
         }
     }
