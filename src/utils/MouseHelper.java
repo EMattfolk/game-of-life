@@ -62,4 +62,8 @@ public class MouseHelper {
     public Vec2 getPos() {
         return pos.copy();
     }
+
+    public void copyPosFrom(MouseHelper other) {
+        pos = other.getPos();
+    }
 }

@@ -108,8 +108,7 @@ public class Field {
     public void reset() {
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                neighborCount[i][j] = 0;
-                field[i][j] = false;
+                setTile(j, i, false);
             }
         }
     }

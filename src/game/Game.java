@@ -160,17 +160,7 @@ public class Game extends JComponent{
                     updateFrameTitle();
                 }
                 else if (key == KeyEvent.VK_SHIFT) {
-                    tileMode = !tileMode;
-                    updateFrameTitle();
-                    removeMouse();
-                    if (tileMode) {
-                        currentShape = Shape.EMPTY;
-                        setMouse(tileMouse);
-                    }
-                    else {
-                        currentShape = shapeHandler.getCurrentShape();
-                        setMouse(shapeMouse);
-                    }
+                    switchMode();
                 }
                 else if (key == KeyEvent.VK_C) {
                     if (canPlaceTile()) {
@@ -220,6 +210,22 @@ public class Game extends JComponent{
             public void keyReleased(KeyEvent e) {}
             public void keyTyped(KeyEvent e) {}
         };
+    }
+
+    private void switchMode() {
+        tileMode = !tileMode;
+        updateFrameTitle();
+        removeMouse();
+        if (tileMode) {
+            currentShape = Shape.EMPTY;
+            tileMouse.getMouseHelper().copyPosFrom(shapeMouse.getMouseHelper());
+            setMouse(tileMouse);
+        }
+        else {
+            currentShape = shapeHandler.getCurrentShape();
+            shapeMouse.getMouseHelper().copyPosFrom(tileMouse.getMouseHelper());
+            setMouse(shapeMouse);
+        }
     }
 
     private void setMouse(MouseAdapter mouse) {
