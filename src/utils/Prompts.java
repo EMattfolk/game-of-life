@@ -2,8 +2,15 @@ package utils;
 
 import javax.swing.*;
 
+/**
+ * Utility class for showing prompts to the user
+ */
 public final class Prompts {
 
+    /**
+     * @param exceptionString Usually a string representation of the error
+     * @return {0, 1} if the user pressed {yes, no} respectively
+     */
     public static int showErrorDialog(String exceptionString) {
         return JOptionPane.showOptionDialog(
             null,
@@ -17,6 +24,12 @@ public final class Prompts {
         );
     }
 
+    /**
+     * @param noticeString A String with information why the notice was shown
+     * @param message A message to the user
+     *
+     * Show a simple window with a message and a "ok" button
+     */
     public static void showNotice(String noticeString, String message) {
         JOptionPane.showMessageDialog(null, noticeString + "\n" + message);
     }
