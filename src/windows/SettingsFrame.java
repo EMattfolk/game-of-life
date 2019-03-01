@@ -26,9 +26,9 @@ public class SettingsFrame extends JFrame {
 
     public SettingsFrame() {
         done = false;
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
         setBounds(100, 100, 0, 0);
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setTitle("Game of Life");
         setResizable(false);
 
@@ -40,6 +40,21 @@ public class SettingsFrame extends JFrame {
         setVisible(true);
     }
 
+    /**
+     * Set up panels in the following configuration:
+     *
+     * Window
+     * |---------------------------------------|
+     * |            |              |           |
+     * | Left panel | Right  panel |           |
+     * |            |              |           |
+     * |------------|--------------|   East    |
+     * |            |              |           |
+     * |   Bottom   |    Bottom    |           |
+     * | Left panel | Right  panel |           |
+     * |            |              |           |
+     * |---------------------------------------|
+     */
     private void setupPanels() {
         left = new JPanel();
         right = new JPanel();
@@ -55,6 +70,10 @@ public class SettingsFrame extends JFrame {
         right.add(bottomRight, BorderLayout.SOUTH);
     }
 
+    /**
+     * Put four input fields onto the window.
+     * The inputs are placed on the left hand side of the window from the top down.
+     */
     private void setupInputs() {
         triples = new InputTriple[] {
                 new InputTriple(" Width", DEFAULT_WIDTH, LABEL_SIZE, 1),
@@ -74,16 +93,19 @@ public class SettingsFrame extends JFrame {
         bottomRight.add(triples[3].textField, BorderLayout.SOUTH);
     }
 
+    /**
+     * Place a button on the right hand side of the window.
+     * Then add a ActionListener to the button which checks if all inputs are correct.
+     */
     private void setupButton() {
-        JButton start = new JButton("Start");
-        start.addActionListener(e -> {
+        JButton startButton = new JButton("Start");
+        add(startButton, BorderLayout.EAST);
+
+        startButton.addActionListener(e -> {
             boolean hasAllInputs = true;
             for (InputTriple triple : triples) {
                 try {
                     triple.extractValue();
-                    if (!triple.hasValidValue()) {
-                        throw new NumberFormatException();
-                    }
                 } catch (NumberFormatException ex) {
                     triple.textField.setText("error");
                     hasAllInputs = false;
@@ -91,7 +113,6 @@ public class SettingsFrame extends JFrame {
             }
             done = hasAllInputs;
         });
-        add(start, BorderLayout.EAST);
     }
 
     public boolean isDone() {
@@ -100,10 +121,10 @@ public class SettingsFrame extends JFrame {
 
     public Setting getSetting() {
         return new Setting(
-                triples[0].value,
-                triples[1].value,
-                triples[2].value,
-                triples[3].value
+                triples[0].getValue(),
+                triples[1].getValue(),
+                triples[2].getValue(),
+                triples[3].getValue()
         );
     }
 }
