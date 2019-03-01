@@ -1,8 +1,12 @@
 package game;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
+import utils.Prompts;
+
+import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -72,25 +76,28 @@ public class ShapeHandler {
         String text = "";
 
         if (!file.isFile()) {
+            return text;
+        }
+
+        while (true) {
             try {
-                file.createNewFile();
+                text = new String(Files.readAllBytes(file.toPath()));
+                return text;
             } catch (IOException e) {
-                System.out.println("Failed to create file");
+                if (Prompts.showErrorDialog(e.toString()) == JOptionPane.NO_OPTION) {
+                    return text;
+                }
             }
         }
-
-        try {
-            text = new String(Files.readAllBytes(file.toPath()));
-        } catch (IOException e) {
-            System.out.println("Failed to find file");
-        }
-
-        return text;
     }
 
     private void extractData(String data) {
         if (data.isEmpty()) return;
-        shapes = gson.fromJson(data, SHAPES_TYPE);
+        try {
+            shapes = gson.fromJson(data, SHAPES_TYPE);
+        } catch (JsonSyntaxException e) {
+            Prompts.showNotice(e.toString(), "Fix Json formatting and restart.");
+        }
     }
 
     public void addShape(Shape shape) {
@@ -102,20 +109,27 @@ public class ShapeHandler {
 
     public void save() {
         File file = new File(SAVE_PATH);
-        if (!file.isFile()) {
+        while (!file.isFile()) {
             try {
                 file.createNewFile();
-            } catch (IOException ignored) {
-                System.out.println("Failed to create file");
+            } catch (IOException e) {
+                if (Prompts.showErrorDialog(e.toString()) == JOptionPane.NO_OPTION) {
+                    return;
+                }
             }
         }
 
         String text = gson.toJson(shapes, SHAPES_TYPE);
 
-        try {
-            Files.write(file.toPath(), text.getBytes());
-        } catch (IOException ignored) {
-            System.out.println("Failed to save");
+        while (true) {
+            try {
+                Files.write(file.toPath(), text.getBytes());
+                return;
+            } catch (IOException e) {
+                if (Prompts.showErrorDialog(e.toString()) == JOptionPane.NO_OPTION) {
+                    return;
+                }
+            }
         }
     }
 }
