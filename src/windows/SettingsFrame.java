@@ -18,7 +18,7 @@ public class SettingsFrame extends JFrame {
     private static final String DEFAULT_WIDTH = "50";
     private static final String DEFAULT_HEIGHT = "50";
     private static final String DEFAULT_TILE_SIZE = "15";
-    private static final String DEFAULT_GRID_WIDTH = "2";
+    private static final String DEFAULT_GRID_WIDTH = "0";
 
     private JPanel left, right, bottomLeft, bottomRight;
     private InputTriple[] triples;

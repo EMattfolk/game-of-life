@@ -92,18 +92,15 @@ public class Game extends JComponent{
 
         while (running) {
             long frameStart = System.nanoTime();
-            int updatesThisFrame = 0;
 
             while (lastUpdate + updateTime < frameStart) {
                 lastUpdate += updateTime;
                 if (!paused) {
                     gameUpdate();
-                    updatesThisFrame++;
                 }
             }
             while (!paused && fastMode && frameTime - (System.nanoTime() - frameStart) / MILLION > 0) {
                 gameUpdate();
-                updatesThisFrame++;
             }
 
             render();
@@ -114,8 +111,6 @@ public class Game extends JComponent{
 
             if (sleepTime < 0)
                 continue;
-
-            System.out.println(updatesThisFrame);
 
             try {
                 Thread.sleep(sleepTime);
@@ -178,9 +173,10 @@ public class Game extends JComponent{
                     }
                 }
                 else if (key == KeyEvent.VK_C) {
-                    field.reset();
-                    paused = true;
-                    updateFrameTitle();
+                    if (canPlaceTile()) {
+                        field.reset();
+                        updateFrameTitle();
+                    }
                 }
                 else if (key == KeyEvent.VK_F) {
                     fastMode = !fastMode;

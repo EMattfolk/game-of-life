@@ -17,7 +17,7 @@ import java.util.List;
  */
 public class Field {
 
-    // Game.Game rules
+    // Game rules
     private static final int LIFE_COUNT = 3;
     private static final int DEATH_LOWER = 2;
     private static final int DEATH_UPPER = 3;
@@ -25,7 +25,7 @@ public class Field {
     private int width, height;
     private boolean updating;
     private boolean[][] field;
-    private int[][] neighbourCount;
+    private int[][] neighborCount;
     private ArrayList<Vec2>[][] adjacentPoints;
     private List<Vec2> decrease, increase;
     private List<Vec2> toUpdate;
@@ -34,7 +34,7 @@ public class Field {
         this.width = width;
         this.height = height;
         field = new boolean[height][width];
-        neighbourCount = new int[height][width];
+        neighborCount = new int[height][width];
         decrease = new ArrayList<>();
         increase = new ArrayList<>();
         toUpdate = new ArrayList<>();
@@ -46,7 +46,7 @@ public class Field {
 
         for (Vec2 coord : toUpdate) {
             int x = coord.x, y = coord.y;
-            int neighbors = neighbourCount[y][x];
+            int neighbors = neighborCount[y][x];
             if (!field[y][x] && neighbors == LIFE_COUNT) {
                 flipTile(x, y);
                 increase.add(coord);
@@ -108,13 +108,10 @@ public class Field {
     public void reset() {
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                if (field[i][j]) {
-                    flipTile(j, i);
-                    updateNeighbors(j, i, -1);
-                }
+                neighborCount[i][j] = 0;
+                field[i][j] = false;
             }
         }
-        toUpdate.clear();
     }
 
     private boolean withinBounds(int x, int y) {
@@ -124,7 +121,7 @@ public class Field {
     private void updateNeighbors(int x, int y, int change) {
         toUpdate.add(new Vec2(x, y));
         for (Vec2 coord : adjacentPoints[y][x]) {
-            neighbourCount[coord.y][coord.x] += change;
+            neighborCount[coord.y][coord.x] += change;
             toUpdate.add(coord);
         }
     }
