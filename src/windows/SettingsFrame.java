@@ -2,6 +2,8 @@ package windows;
 
 import utils.Setting;
 import utils.InputTriple;
+import utils.WindowUtils;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -26,17 +28,17 @@ public class SettingsFrame extends JFrame {
 
     public SettingsFrame() {
         done = false;
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
-        setBounds(100, 100, 0, 0);
-        setTitle("Game of Life");
-        setResizable(false);
 
         setupPanels();
         setupInputs();
         setupButton();
 
         pack();
+        setResizable(false);
+        setTitle("Game of Life");
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        setBounds(WindowUtils.getCenteredBound(getPreferredSize()));
         setVisible(true);
     }
 
