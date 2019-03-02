@@ -51,15 +51,9 @@ import java.util.logging.Logger;
 public class Game extends JComponent{
 
     private static final Logger LOGGER = Logger.getLogger(ShapeHandler.class.getName());
-    private static final String TITLE_STRING = "%s - %s Updates / sec - %s";
-    private static final String TILE_MODE = "Tile mode";
-    private static final String SHAPE_MODE = "Shape mode";
-    private static final String PAUSED = "Paused";
-    private static final String RUNNING = "Running";
-    private static final String MANY = "Many";
+    private static final long FPS = 30;
     private static final long MILLION = 1000000;
     private static final long BILLION = 1000000000;
-    private static final long FPS = 30;
     private static final int UPS_SOFT_CAP = 0; // Increase this to allow placing while simulating (unsafe)
     private static final int UPS_HARD_CAP = 1000;
 
@@ -336,10 +330,10 @@ public class Game extends JComponent{
      */
     private void updateFrameTitle() {
         gameFrame.setTitle(
-            String.format(TITLE_STRING,
-                    paused ? PAUSED : RUNNING,
-                    fastMode ? MANY : String.valueOf(ups),
-                    tileMode ? TILE_MODE : SHAPE_MODE)
+            String.format("%s - %s Updates / sec - %s",
+                    paused ? "Paused" : "Running",
+                    fastMode ? "Many" : String.valueOf(ups),
+                    tileMode ? "Tile mode" : "Shape mode")
         );
     }
 
