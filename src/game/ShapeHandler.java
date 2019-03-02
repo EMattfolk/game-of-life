@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
-import utils.Prompts;
+import utils.WindowUtils;
 
 import javax.swing.*;
 import java.io.File;
@@ -84,7 +84,7 @@ public class ShapeHandler {
                 text = new String(Files.readAllBytes(file.toPath()));
                 return text;
             } catch (IOException e) {
-                if (Prompts.showErrorDialog(e.toString()) == JOptionPane.NO_OPTION) {
+                if (WindowUtils.showErrorDialog(e.toString()) == JOptionPane.NO_OPTION) {
                     return text;
                 }
             }
@@ -96,7 +96,7 @@ public class ShapeHandler {
         try {
             shapes = gson.fromJson(data, SHAPES_TYPE);
         } catch (JsonSyntaxException e) {
-            Prompts.showNotice(e.toString(), "Fix Json formatting and restart.");
+            WindowUtils.showNotice(e.toString(), "Fix Json formatting and restart.");
         }
     }
 
@@ -113,7 +113,7 @@ public class ShapeHandler {
             try {
                 file.createNewFile();
             } catch (IOException e) {
-                if (Prompts.showErrorDialog(e.toString()) == JOptionPane.NO_OPTION) {
+                if (WindowUtils.showErrorDialog(e.toString()) == JOptionPane.NO_OPTION) {
                     return;
                 }
             }
@@ -126,7 +126,7 @@ public class ShapeHandler {
                 Files.write(file.toPath(), text.getBytes());
                 return;
             } catch (IOException e) {
-                if (Prompts.showErrorDialog(e.toString()) == JOptionPane.NO_OPTION) {
+                if (WindowUtils.showErrorDialog(e.toString()) == JOptionPane.NO_OPTION) {
                     return;
                 }
             }

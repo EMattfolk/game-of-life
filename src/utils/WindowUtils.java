@@ -1,11 +1,12 @@
 package utils;
 
 import javax.swing.*;
+import java.awt.*;
 
 /**
  * Utility class for showing prompts to the user
  */
-public final class Prompts {
+public final class WindowUtils {
 
     /**
      * @param exceptionString Usually a string representation of the error
@@ -32,5 +33,16 @@ public final class Prompts {
      */
     public static void showNotice(String noticeString, String message) {
         JOptionPane.showMessageDialog(null, noticeString + "\n" + message);
+    }
+
+    /**
+     * @param windowDimension The dimension of the window to be centered
+     * @return Rectangle representing the bounds of the window if it was centered
+     */
+    public static Rectangle getCenteredBound(Dimension windowDimension) {
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int x = (screenSize.width - windowDimension.width) / 2;
+        int y = (screenSize.height - windowDimension.height) / 2;
+        return new Rectangle(x, y, windowDimension.width, windowDimension.height);
     }
 }

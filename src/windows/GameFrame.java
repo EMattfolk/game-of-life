@@ -1,6 +1,7 @@
 package windows;
 
 import game.Game;
+import utils.WindowUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,12 +14,12 @@ import java.awt.*;
  */
 public class GameFrame extends JFrame {
     public GameFrame(Game game) {
+        setResizable(false);
         game.setGameFrame(this);
         setLayout(new BorderLayout());
         add(game, BorderLayout.CENTER);
-        setBounds(100, 100, 0, 0);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setResizable(false);
+        setBounds(WindowUtils.getCenteredBound(getPreferredSize()));
         setVisible(true);
     }
 }
