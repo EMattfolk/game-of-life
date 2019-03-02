@@ -62,7 +62,7 @@ public class Renderer {
         g.setColor(TILE);
         for (int i = 0; i < height; i++) {
             int y = i * (tileSize + gridWidth);
-            for (int j = 0; j < height; j++) {
+            for (int j = 0; j < width; j++) {
                 int x = j * (tileSize + gridWidth);
                 if (field.getTile(j, i)) {
                     g.fillRect(x, y, tileSize, tileSize);
