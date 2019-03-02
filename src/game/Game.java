@@ -43,6 +43,7 @@ import java.awt.event.MouseAdapter;
  * 1.0: It works
  * 1.0.1: Fixed the game crashing at "high" loads and if sleep time was negative
  * 1.1: Added saving, printing and rotation of shapes and restructured the program which led to better performance
+ * 1.2: Refactored all code and changed the controls. Added a fast mode and more options for rendering.
  */
 
 public class Game extends JComponent{
@@ -55,8 +56,8 @@ public class Game extends JComponent{
     private static final long MILLION = 1000000;
     private static final long BILLION = 1000000000;
     private static final long FPS = 30;
-    public static final int UPS_SOFT_CAP = 0; // Increase this to allow placing while simulating
-    public static final int UPS_HARD_CAP = 1000;
+    private static final int UPS_SOFT_CAP = 0; // Increase this to allow placing while simulating (unsafe)
+    private static final int UPS_HARD_CAP = 1000;
 
     private long updateTime;
     private long ups;
@@ -83,6 +84,10 @@ public class Game extends JComponent{
         setupListeners();
     }
 
+    /**
+     * Game loop
+     * This function starts the game and updates it
+     */
     public void start() {
         gameFrame.pack();
         updateTime = BILLION / ups;
@@ -121,10 +126,18 @@ public class Game extends JComponent{
         }
     }
 
+    /**
+     * Update the game
+     * The game is not that complicated so only the field needs to be updated.
+     */
     private void gameUpdate() {
         field.update();
     }
 
+    /**
+     * Draw the game
+     * Some things should not be drawn at all times. Hence the need for multiple draw calls.
+     */
     private void render() {
         renderer.clear();
         renderer.drawGridlines();
@@ -138,6 +151,10 @@ public class Game extends JComponent{
         repaint();
     }
 
+    /**
+     * Set up MouseListeners and KeyListener
+     * This function sets up the listeners so that user input can be handled.
+     */
     private void setupListeners() {
         setFocusable(true);
         setupMouseModes();
@@ -147,6 +164,9 @@ public class Game extends JComponent{
         requestFocus();
     }
 
+    /**
+     * Create a KeyListener for handling keyboard input
+     */
     private void setUpKeyListener() {
         keyListener = new KeyListener() {
 
@@ -181,10 +201,10 @@ public class Game extends JComponent{
                         }
                     }
                     else if (key == KeyEvent.VK_LEFT) {
-                        changeUPS(false);
+                        changeUps(false);
                     }
                     else if (key == KeyEvent.VK_RIGHT) {
-                        changeUPS(true);
+                        changeUps(true);
                     }
                 }
                 // Keybindings in shape mode
@@ -212,6 +232,10 @@ public class Game extends JComponent{
         };
     }
 
+    /**
+     * Switch between tileMode and shapeMode
+     * The main purpose of this method is to change the MouseListener
+     */
     private void switchMode() {
         tileMode = !tileMode;
         updateFrameTitle();
@@ -238,8 +262,10 @@ public class Game extends JComponent{
         removeMouseMotionListener(getMouseMotionListeners()[0]);
     }
 
+    /**
+     * Create MouseListeners for tileMode and shapeMode
+     */
     private void setupMouseModes() {
-
         tileMouse = new AbstractMouseMode(setting) {
             @Override
             public void onPress(int x, int y) {
@@ -258,6 +284,7 @@ public class Game extends JComponent{
             @Override
             public void onRelease(int x, int y) {}
         };
+
         shapeMouse = new AbstractMouseMode(setting) {
             @Override
             public void onPress(int x, int y) {
@@ -288,13 +315,20 @@ public class Game extends JComponent{
     private boolean canPlaceTile() {
         return (ups < UPS_SOFT_CAP && !fastMode) || paused;
     }
-    private void changeUPS(boolean increase) {
+
+    /**
+     * @param increase If true, increase the updates per second. Otherwise decrease.
+     */
+    private void changeUps(boolean increase) {
         int change = increase ? 1 : -1;
         ups = Math.max(1, Math.min(ups + change, UPS_HARD_CAP)); // Clamp ups between 1 and UPS_HARD_CAP
         updateTime = BILLION / ups;
         updateFrameTitle();
     }
 
+    /**
+     * Set the frame title to a String with information about the game.
+     */
     private void updateFrameTitle() {
         gameFrame.setTitle(
             String.format(TITLE_STRING,
