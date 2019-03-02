@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by Erik Mattfolk on 2017-05-06.
@@ -26,7 +28,8 @@ import java.util.ArrayList;
  */
 public class ShapeHandler {
 
-    public static final String SAVE_PATH = "shapes.json";
+    private static final Logger LOGGER = Logger.getLogger(ShapeHandler.class.getName());
+    private static final String SAVE_PATH = "shapes.json";
     private static final Type SHAPES_TYPE = new TypeToken<ArrayList<Shape>>() {}.getType();
 
     private int currentShape;
@@ -84,6 +87,7 @@ public class ShapeHandler {
                 text = new String(Files.readAllBytes(file.toPath()));
                 return text;
             } catch (IOException e) {
+                LOGGER.log(Level.SEVERE, e.toString(), e);
                 if (WindowUtils.showErrorDialog(e.toString()) == JOptionPane.NO_OPTION) {
                     return text;
                 }
@@ -96,6 +100,7 @@ public class ShapeHandler {
         try {
             shapes = gson.fromJson(data, SHAPES_TYPE);
         } catch (JsonSyntaxException e) {
+            LOGGER.log(Level.SEVERE, e.toString(), e);
             WindowUtils.showNotice(e.toString(), "Fix Json formatting and restart.");
         }
     }
@@ -113,6 +118,7 @@ public class ShapeHandler {
             try {
                 file.createNewFile();
             } catch (IOException e) {
+                LOGGER.log(Level.SEVERE, e.toString(), e);
                 if (WindowUtils.showErrorDialog(e.toString()) == JOptionPane.NO_OPTION) {
                     return;
                 }
@@ -126,6 +132,7 @@ public class ShapeHandler {
                 Files.write(file.toPath(), text.getBytes());
                 return;
             } catch (IOException e) {
+                LOGGER.log(Level.SEVERE, e.toString(), e);
                 if (WindowUtils.showErrorDialog(e.toString()) == JOptionPane.NO_OPTION) {
                     return;
                 }

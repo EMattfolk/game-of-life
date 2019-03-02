@@ -9,6 +9,8 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by Erik Mattfolk on 2017-04-27.
@@ -47,6 +49,8 @@ import java.awt.event.MouseAdapter;
  */
 
 public class Game extends JComponent{
+
+    private static final Logger LOGGER = Logger.getLogger(ShapeHandler.class.getName());
     private static final String TITLE_STRING = "%s - %s Updates / sec - %s";
     private static final String TILE_MODE = "Tile mode";
     private static final String SHAPE_MODE = "Shape mode";
@@ -120,7 +124,8 @@ public class Game extends JComponent{
             try {
                 Thread.sleep(sleepTime);
             }
-            catch (InterruptedException ignored) {
+            catch (InterruptedException e) {
+                LOGGER.log(Level.SEVERE, e.toString(), e);
                 running = false;
             }
         }

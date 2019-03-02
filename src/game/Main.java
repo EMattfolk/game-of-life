@@ -4,6 +4,9 @@ import utils.Setting;
 import windows.GameFrame;
 import windows.SettingsFrame;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  * Created by Erik Mattfolk on 2017-04-27.
  *
@@ -12,6 +15,7 @@ import windows.SettingsFrame;
  */
 public final class Main {
 
+    private static final Logger LOGGER = Logger.getLogger(ShapeHandler.class.getName());
     public static final int WAIT_TIME = 200;
 
     private Main() {}
@@ -21,7 +25,8 @@ public final class Main {
         while (!settingsFrame.isDone()) {
             try {
                 Thread.sleep(WAIT_TIME);
-            } catch (InterruptedException ignored) {
+            } catch (InterruptedException e) {
+                LOGGER.log(Level.SEVERE, e.toString(), e);
                 System.exit(0);
             }
         }
