@@ -1,6 +1,6 @@
 package game;
 
-import utils.AbstractMouseMode;
+import utils.MouseMode;
 import utils.Setting;
 import windows.GameFrame;
 
@@ -9,6 +9,7 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -65,7 +66,7 @@ public class Game extends JComponent {
     private Field field;
     private Renderer renderer;
     private ShapeHandler shapeHandler;
-    private AbstractMouseMode tileMouse, shapeMouse;
+    private MouseMode tileMouse, shapeMouse;
     private KeyListener keyListener;
     private Setting setting;
 
@@ -208,20 +209,22 @@ public class Game extends JComponent {
                 }
                 // Keybindings in shape mode
                 else {
-                    if (key == KeyEvent.VK_UP) {
-                        currentShape = currentShape.getRotation();
-                    }
-                    else if (key == KeyEvent.VK_LEFT) {
-                        shapeHandler.cycleBackward();
-                        currentShape = shapeHandler.getCurrentShape();
-                    }
-                    else if (key == KeyEvent.VK_RIGHT) {
-                        shapeHandler.cycleForward();
-                        currentShape = shapeHandler.getCurrentShape();
-                    }
-                    else if (key == KeyEvent.VK_D) {
-                        shapeHandler.deleteCurrentShape();
-                        currentShape = shapeHandler.getCurrentShape();
+                    if (!shapeMouse.getMouseHelper().isMarking()) {
+                        if (key == KeyEvent.VK_UP) {
+                            currentShape = currentShape.getRotation();
+                        }
+                        else if (key == KeyEvent.VK_LEFT) {
+                            shapeHandler.cycleBackward();
+                            currentShape = shapeHandler.getCurrentShape();
+                        }
+                        else if (key == KeyEvent.VK_RIGHT) {
+                            shapeHandler.cycleForward();
+                            currentShape = shapeHandler.getCurrentShape();
+                        }
+                        else if (key == KeyEvent.VK_D) {
+                            shapeHandler.deleteCurrentShape();
+                            currentShape = shapeHandler.getCurrentShape();
+                        }
                     }
                 }
             }
@@ -254,18 +257,20 @@ public class Game extends JComponent {
     private void setMouse(MouseAdapter mouse) {
         addMouseListener(mouse);
         addMouseMotionListener(mouse);
+        addMouseWheelListener(mouse);
     }
 
     private void removeMouse() {
         removeMouseListener(getMouseListeners()[0]);
         removeMouseMotionListener(getMouseMotionListeners()[0]);
+        removeMouseWheelListener(getMouseWheelListeners()[0]);
     }
 
     /**
      * Create MouseListeners for tileMode and shapeMode
      */
     private void setupMouseModes() {
-        tileMouse = new AbstractMouseMode(setting) {
+        tileMouse = new MouseMode(setting) {
             @Override
             public void onPress(int x, int y) {
                 if (canPlaceTile() && (leftPressed || rightPressed)) {
@@ -279,12 +284,9 @@ public class Game extends JComponent {
                     field.setTile(x, y, leftDown);
                 }
             }
-
-            @Override
-            public void onRelease(int x, int y) {}
         };
 
-        shapeMouse = new AbstractMouseMode(setting) {
+        shapeMouse = new MouseMode(setting) {
             @Override
             public void onPress(int x, int y) {
                 if (canPlaceTile() && leftPressed) {
@@ -307,7 +309,13 @@ public class Game extends JComponent {
             }
 
             @Override
-            public void onDrag(int x, int y) {}
+            public void onWheel(int dir) {
+                if (!mouseHelper.isMarking()) {
+                    if (dir > 0) shapeHandler.cycleBackward();
+                    else shapeHandler.cycleForward();
+                    currentShape = shapeHandler.getCurrentShape();
+                }
+            }
         };
     }
 
