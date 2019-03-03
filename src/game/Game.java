@@ -48,7 +48,7 @@ import java.util.logging.Logger;
  * 1.2: Refactored all code and changed the controls. Added a fast mode and more options for rendering.
  */
 
-public class Game extends JComponent{
+public class Game extends JComponent {
 
     private static final Logger LOGGER = Logger.getLogger(ShapeHandler.class.getName());
     private static final long FPS = 30;

@@ -41,6 +41,10 @@ public class Field {
         createAdjacentPoints();
     }
 
+    /**
+     * Simulate one generation on the field.
+     * Kill and create life according to the rules of game of life.
+     */
     public void update() {
         updating = true;
 
@@ -68,6 +72,11 @@ public class Field {
         updating = false;
     }
 
+    /**
+     * @param x x-coordinate
+     * @param y y-coordinate
+     * @param b boolean determining what to set (x, y) to
+     */
     public void setTile(int x, int y, boolean b)
     {
         if (updating || !withinBounds(x, y) || field[y][x] == b) return;
@@ -79,6 +88,11 @@ public class Field {
         field[y][x] = !field[y][x];
     }
 
+    /**
+     * @param x x-coordinate where the shape will be put
+     * @param y y-coordinate where the shape will by put
+     * @param shape The shape to be put on the field
+     */
     public void putShape(int x, int y, Shape shape) {
         Vec2 offset = shape.getMiddle();
         for (Vec2 p : shape.getPoints()) {
@@ -86,12 +100,18 @@ public class Field {
         }
     }
 
+    /**
+     * @param bounds Rectangle representing a marking.
+     * @return Shape with all points inside the bounds that contain a life.
+     */
     public Shape getShape(Rectangle bounds) {
         ArrayList<Vec2> points = new ArrayList<>();
+        int startX = Math.max(bounds.x, 0);
+        int startY = Math.max(bounds.y, 0);
         int endX = Math.min(bounds.x + bounds.width, width);
         int endY = Math.min(bounds.y + bounds.height, height);
-        for (int i = bounds.y; i < endY; i++) {
-            for (int j = bounds.x; j < endX; j++) {
+        for (int i = startY; i < endY; i++) {
+            for (int j = startX; j < endX; j++) {
                 if (field[i][j]) {
                     points.add(new Vec2(j, i));
                 }
@@ -105,6 +125,9 @@ public class Field {
         return field[y][x];
     }
 
+    /**
+     * Set all tiles to False. This clears the field of any life.
+     */
     public void reset() {
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
@@ -113,10 +136,24 @@ public class Field {
         }
     }
 
+    /**
+     * @param x x-coordinate
+     * @param y y-coordinate
+     * @return True if (x, y) is on the board, False otherwise
+     *
+     * Ever heard of bounds-checking? This is it.
+     */
     private boolean withinBounds(int x, int y) {
         return y >= 0 && y < height && x >= 0 && x < width;
     }
 
+    /**
+     * @param x x-coordinate of the tile
+     * @param y y-coordinate of the tile
+     * @param change 1 or -1 depending on whether the tile at (x, y) was switched on or off
+     *
+     * Change neighborCount for all neighbors of (x, y) by change.
+     */
     private void updateNeighbors(int x, int y, int change) {
         toUpdate.add(new Vec2(x, y));
         for (Vec2 coord : adjacentPoints[y][x]) {
@@ -125,12 +162,16 @@ public class Field {
         }
     }
 
+    /**
+     * Create a fast lookup-table for neighboring indexes.
+     * Used for updating the table without having to calculate the neighbors every time.
+     */
     private void createAdjacentPoints() {
 
         adjacentPoints = new ArrayList[height][width];
         Vec2[] offsets = new Vec2[] {
                 new Vec2(-1, -1), new Vec2(0, -1), new Vec2(1, -1),
-                new Vec2(-1, 0),                   new Vec2(1, 0),
+                new Vec2(-1, 0),                         new Vec2(1, 0),
                 new Vec2(-1, 1),  new Vec2(0, 1),  new Vec2(1, 1)
         };
 
