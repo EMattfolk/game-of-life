@@ -9,7 +9,6 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -141,13 +140,10 @@ public class Game extends JComponent {
     private void render() {
         renderer.clear();
         renderer.drawGridlines();
-        if (!tileMode) {
-            renderer.drawShapeOutline(currentShape, shapeMouse.getMouseHelper().getPos());
-        }
+        renderer.drawShapeOutline(currentShape, shapeMouse.getMouseHelper().getPos());
         renderer.drawActiveTiles(field);
-        if (!tileMode) {
+        if (!tileMode)
             renderer.drawMarking(shapeMouse.getMouseHelper());
-        }
         repaint();
     }
 
@@ -250,6 +246,7 @@ public class Game extends JComponent {
         else {
             currentShape = shapeHandler.getCurrentShape();
             shapeMouse.getMouseHelper().copyPosFrom(tileMouse.getMouseHelper());
+            shapeMouse.getMouseHelper().endMarking();
             setMouse(shapeMouse);
         }
     }
