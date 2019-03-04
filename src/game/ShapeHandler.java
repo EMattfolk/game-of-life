@@ -29,8 +29,8 @@ import java.util.logging.Logger;
 public class ShapeHandler {
 
     private static final Logger LOGGER = Logger.getLogger(ShapeHandler.class.getName());
-    private static final String SAVE_PATH = "shapes.json";
     private static final Type SHAPES_TYPE = new TypeToken<ArrayList<Shape>>() {}.getType();
+    private static final String SAVE_PATH = "shapes.json";
 
     private int currentShape;
     private ArrayList<Shape> shapes;
@@ -51,6 +51,10 @@ public class ShapeHandler {
             return shapes.get(currentShape);
     }
 
+    /**
+     * Delete the Shape at index currentShape.
+     * Then overwrite saved shapes and adjust currentShape.
+     */
     public void deleteCurrentShape() {
         if (shapes.isEmpty()) return;
         shapes.remove(currentShape);
@@ -59,42 +63,59 @@ public class ShapeHandler {
         currentShape %= shapes.size();
     }
 
+    /**
+     * Increment currentShape by one.
+     * If currentShape becomes equal to the size of shapes it is set to 0.
+     */
     public void cycleForward() {
         if (shapes.isEmpty()) return;
         currentShape = (currentShape + 1) % shapes.size();
     }
 
+    /**
+     * Decrement currentShape by one.
+     * If currentShape becomes negative it is set to the last index if shapes.
+     */
     public void cycleBackward() {
         if (shapes.isEmpty()) return;
         currentShape = Math.floorMod(currentShape - 1, shapes.size());
     }
 
+    /**
+     * Set current shape to the last index of shapes
+     */
     public void cycleToEnd() {
         if (shapes.isEmpty()) return;
         currentShape = shapes.size() - 1;
     }
 
+    /**
+     * @return String of the contents of SAVE_PATH, "" if no file exists
+     */
     private String readFile() {
         File file = new File(SAVE_PATH);
-        String text = "";
 
         if (!file.isFile()) {
-            return text;
+            return "";
         }
 
         while (true) {
             try {
-                text = new String(Files.readAllBytes(file.toPath()));
-                return text;
+                return new String(Files.readAllBytes(file.toPath()));
             } catch (IOException e) {
                 LOGGER.log(Level.SEVERE, e.toString(), e);
                 if (WindowUtils.showErrorDialog(e.toString()) == JOptionPane.NO_OPTION) {
-                    return text;
+                    return "";
                 }
             }
         }
     }
 
+    /**
+     * @param data String with Json data
+     *
+     * If data is a valid Json String, all shapes it represents will be turned into the list.
+     */
     private void extractData(String data) {
         if (data.isEmpty()) return;
         try {
@@ -105,6 +126,11 @@ public class ShapeHandler {
         }
     }
 
+    /**
+     * @param shape The Shape to be added
+     *
+     * Add any non-empty shapes to the list
+     */
     public void addShape(Shape shape) {
         if (!shape.getPoints().isEmpty()) {
             shapes.add(shape);
@@ -112,6 +138,10 @@ public class ShapeHandler {
         }
     }
 
+    /**
+     * Save all shapes in the file SAVE_PATH.
+     * Shapes are converted using Gson and stored as Json data.
+     */
     public void save() {
         File file = new File(SAVE_PATH);
         while (!file.isFile()) {
