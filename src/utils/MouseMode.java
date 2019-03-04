@@ -12,7 +12,7 @@ import java.awt.event.MouseWheelEvent;
  */
 public abstract class MouseMode extends MouseAdapter {
 
-    protected MouseHelper mouseHelper;
+    protected final MouseHelper mouseHelper;
     protected boolean leftDown;
     protected boolean rightDown;
     protected boolean leftPressed;
@@ -30,6 +30,52 @@ public abstract class MouseMode extends MouseAdapter {
         rightReleased = false;
     }
 
+    /*
+     *  Start implementable methods
+     *  Note that none of these methods have to be implemented to have a valid MouseMode
+     */
+
+    /**
+     * @param x field x-coordinate
+     * @param y field y-coordinate
+     *
+     * Called when a mouse button is pressed
+     */
+    public void onPress(int x, int y) {}
+
+    /**
+     * @param x field x-coordinate
+     * @param y field y-coordinate
+     *
+     * Called when a mouse button is released
+     */
+    public void onRelease(int x, int y) {}
+
+    /**
+     * @param x field x-coordinate
+     * @param y field y-coordinate
+     *
+     * Called when a mouse button is held down and the mouse is moved
+     */
+    public void onDrag(int x, int y) {}
+
+    /**
+     * @param dir direction of scrolling
+     *
+     * Called when the scroll wheel moves
+     */
+    public void onWheel(int dir) {}
+
+    /*
+     *  End implementable methods
+     */
+
+    /**
+     * FINAL
+     * @param e MouseEvent
+     *
+     * Handle mousePresses and set up variables so that they are in the right state when calling onPress.
+     */
     public final void mousePressed(MouseEvent e) {
         if (e.getButton() == MouseEvent.BUTTON1) {
             leftDown = true;
@@ -44,6 +90,12 @@ public abstract class MouseMode extends MouseAdapter {
         rightPressed = false;
     }
 
+    /**
+     * FINAL
+     * @param e MouseEvent
+     *
+     * Handle mouseReleases and set up variables so that they are in the right state when calling onRelease.
+     */
     public final void mouseReleased(MouseEvent e) {
         if (e.getButton() == MouseEvent.BUTTON1) {
             leftDown = false;
@@ -58,23 +110,36 @@ public abstract class MouseMode extends MouseAdapter {
         rightReleased = false;
     }
 
+    /**
+     * FINAL
+     * @param e MouseEvent
+     *
+     * Handle mouseDragged event and update mouseHelper position before calling onDrag.
+     */
     public final void mouseDragged(MouseEvent e) {
         mouseHelper.setMousePosition(e.getX(), e.getY());
         onDrag(mouseHelper.getX(), mouseHelper.getY());
     }
 
+    /**
+     * FINAL
+     * @param e MouseEvent
+     *
+     * Handle mouseMoved event and update mouseHelper position.
+     */
     public final void mouseMoved(MouseEvent e) {
         mouseHelper.setMousePosition(e.getX(), e.getY());
     }
 
+    /**
+     * FINAL
+     * @param e MouseEvent
+     *
+     * Handle mouseWheelMoved event and call onWheel with the scroll direction.
+     */
     public final void mouseWheelMoved(MouseWheelEvent e) {
         onWheel(e.getWheelRotation());
     }
-
-    public void onPress(int x, int y) {}
-    public void onRelease(int x, int y) {}
-    public void onDrag(int x, int y) {}
-    public void onWheel(int dir) {}
 
     public final MouseHelper getMouseHelper() {
         return mouseHelper;

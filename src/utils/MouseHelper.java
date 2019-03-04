@@ -8,31 +8,35 @@ import java.awt.*;
  *
  * Keeps track of mouse movements, positions and updates
  * This class is meant to translate what you see on the screen to what is usable by the program.
- * Therefore it is closely related to the Game.Renderer
  */
 public class MouseHelper {
 
-    private int tileSize;
+    private int cellSize;
     private Vec2 pos;
     private Vec2 markPos;
     private boolean marking;
 
     public MouseHelper(Setting setting) {
-        this.tileSize = setting.tileSize + setting.gridWidth;
+        this.cellSize = setting.tileSize + setting.gridWidth;
         pos = new Vec2();
         markPos = new Vec2();
         marking = false;
     }
 
+    /**
+     * @param x pixel x-coordinate
+     * @param y pixel y-coordinate
+     *
+     * Turn pixel coordinates into field coordinates
+     */
     public void setMousePosition(int x, int y) {
-        pos.x = x / tileSize;
-        pos.y = y / tileSize;
+        pos.x = x / cellSize;
+        pos.y = y / cellSize;
     }
 
-    public boolean isMarking() {
-        return marking;
-    }
-
+    /**
+     * Set the start point for the marking.
+     */
     public void startMarking() {
         marking = true;
         markPos = pos.copy();
@@ -42,6 +46,9 @@ public class MouseHelper {
         marking = false;
     }
 
+    /**
+     * @return Rectangle representing the marked area on the field
+     */
     public Rectangle getMarking() {
         return new Rectangle(
                 Math.min(pos.x, markPos.x),
@@ -57,6 +64,10 @@ public class MouseHelper {
 
     public int getY() {
         return pos.y;
+    }
+
+    public boolean isMarking() {
+        return marking;
     }
 
     public Vec2 getPos() {

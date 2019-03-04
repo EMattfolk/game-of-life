@@ -4,13 +4,11 @@ package utils;
  * Created by Erik Mattfolk on 2019-02-13.
  *
  * A simple 2D Vector implementation
- * Mostly used to specify coordinates for shapes
- * or coordinates on the board.
+ * Mostly used to specify coordinates for shapes or coordinates on the board.
+ * This class behaves like a struct, hence the public fields.
  */
 public class Vec2 {
 
-    // I want this class to behave kind of like
-    // a struct, hence the public fields.
     public int x;
     public int y;
 
