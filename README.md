@@ -1,10 +1,9 @@
- # Game.Game of life
- This is a recreation of Conway's Game.Game of Life made in Java.
+ # Game of life
+ This is a recreation of Conway's Game of Life made in Java.
 
  ## Features
- * Scalable field
  * Saving of cell configurations
- * Fast simulation up to 200 updates per second
+ * Simulation as fast as your computer can handle
 
 ## Rules
 * Tile is _**born**_ if it has **3** neighbors
