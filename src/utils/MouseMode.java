@@ -13,12 +13,12 @@ import java.awt.event.MouseWheelEvent;
 public abstract class MouseMode extends MouseAdapter {
 
     protected final MouseHelper mouseHelper;
-    protected boolean leftDown;
-    protected boolean rightDown;
-    protected boolean leftPressed;
-    protected boolean rightPressed;
-    protected boolean leftReleased;
-    protected boolean rightReleased;
+    private boolean leftDown;
+    private boolean rightDown;
+    private boolean leftPressed;
+    private boolean rightPressed;
+    private boolean leftReleased;
+    private boolean rightReleased;
 
     protected MouseMode(Setting setting) {
         mouseHelper = new MouseHelper(setting);
@@ -144,4 +144,29 @@ public abstract class MouseMode extends MouseAdapter {
     public final MouseHelper getMouseHelper() {
         return mouseHelper;
     }
+
+    public boolean isLeftDown() {
+        return leftDown;
+    }
+
+    public boolean isRightDown() {
+        return rightDown;
+    }
+
+    public boolean isLeftPressed() {
+        return leftPressed;
+    }
+
+    public boolean isRightPressed() {
+        return rightPressed;
+    }
+
+    public boolean isLeftReleased() {
+        return leftReleased;
+    }
+
+    public boolean isRightReleased() {
+        return rightReleased;
+    }
+
 }

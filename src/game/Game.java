@@ -270,15 +270,15 @@ public class Game extends JComponent {
         tileMouse = new MouseMode(setting) {
             @Override
             public void onPress(int x, int y) {
-                if (canPlaceTile() && (leftPressed || rightPressed)) {
-                    field.setTile(x, y, leftDown);
+                if (canPlaceTile() && (isLeftPressed() || isRightPressed())) {
+                    field.setTile(x, y, isLeftDown());
                 }
             }
 
             @Override
             public void onDrag(int x, int y) {
-                if (canPlaceTile() && (leftDown || rightDown)) {
-                    field.setTile(x, y, leftDown);
+                if (canPlaceTile() && (isLeftDown() || isRightDown())) {
+                    field.setTile(x, y, isLeftDown());
                 }
             }
         };
@@ -286,10 +286,10 @@ public class Game extends JComponent {
         shapeMouse = new MouseMode(setting) {
             @Override
             public void onPress(int x, int y) {
-                if (canPlaceTile() && leftPressed) {
+                if (canPlaceTile() && isLeftPressed()) {
                     field.putShape(x, y, currentShape);
                 }
-                else if (rightPressed) {
+                else if (isRightPressed()) {
                     mouseHelper.startMarking();
                     currentShape = Shape.EMPTY;
                 }
@@ -297,7 +297,7 @@ public class Game extends JComponent {
 
             @Override
             public void onRelease(int x, int y) {
-                if (rightReleased) {
+                if (isRightReleased()) {
                     mouseHelper.endMarking();
                     shapeHandler.addShape(field.getShape(mouseHelper.getMarking()));
                     shapeHandler.cycleToEnd();
