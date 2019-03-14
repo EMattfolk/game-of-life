@@ -15,7 +15,7 @@ import java.util.logging.Logger;
  */
 public final class Main {
 
-    private static final Logger LOGGER = Logger.getLogger(ShapeHandler.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(Main.class.getName());
     public static final int WAIT_TIME = 200;
 
     private Main() {}

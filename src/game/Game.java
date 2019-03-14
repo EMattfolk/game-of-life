@@ -50,7 +50,7 @@ import java.util.logging.Logger;
 
 public class Game extends JComponent {
 
-    private static final Logger LOGGER = Logger.getLogger(ShapeHandler.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(Game.class.getName());
     private static final long FPS = 30;
     private static final long MILLION = 1000000;
     private static final long BILLION = 1000000000;
@@ -59,7 +59,9 @@ public class Game extends JComponent {
 
     private long updateTime;
     private long ups;
-    private boolean paused, tileMode, fastMode;
+    private boolean paused;
+    private boolean tileMode;
+    private boolean fastMode;
     private Shape currentShape;
     private GameFrame gameFrame;
     private Field field;

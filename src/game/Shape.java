@@ -15,7 +15,7 @@ import java.util.List;
 public class Shape {
 
     public static final Shape EMPTY = new Shape(new ArrayList<>());
-    private ArrayList<Vec2> points;
+    private List<Vec2> points;
     private Vec2 middle;
 
     public Shape(ArrayList<Vec2> points) {
